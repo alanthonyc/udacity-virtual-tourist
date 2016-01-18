@@ -15,6 +15,7 @@
 		6B6087DB1C4C7991001F96DF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B6087D91C4C7991001F96DF /* LaunchScreen.storyboard */; };
 		6B6087E61C4C7991001F96DF /* Virtual_TouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6087E51C4C7991001F96DF /* Virtual_TouristTests.swift */; };
 		6B6087F11C4C7991001F96DF /* Virtual_TouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6087F01C4C7991001F96DF /* Virtual_TouristUITests.swift */; };
+		6B6087FF1C4C7A95001F96DF /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6087FE1C4C7A95001F96DF /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		6B6087EC1C4C7991001F96DF /* Virtual TouristUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Virtual TouristUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B6087F01C4C7991001F96DF /* Virtual_TouristUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Virtual_TouristUITests.swift; sourceTree = "<group>"; };
 		6B6087F21C4C7991001F96DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6B6087FE1C4C7A95001F96DF /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B6087FF1C4C7A95001F96DF /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +82,7 @@
 		6B6087C11C4C7991001F96DF = {
 			isa = PBXGroup;
 			children = (
+				6B6087FE1C4C7A95001F96DF /* MapKit.framework */,
 				6B6087CC1C4C7991001F96DF /* Virtual Tourist */,
 				6B6087E41C4C7991001F96DF /* Virtual TouristTests */,
 				6B6087EF1C4C7991001F96DF /* Virtual TouristUITests */,
