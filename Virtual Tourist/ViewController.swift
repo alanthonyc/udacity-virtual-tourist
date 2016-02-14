@@ -8,18 +8,37 @@
 
 import UIKit
 import CoreData
+import MapKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, MKMapViewDelegate {
+
+    // MARK: - IB Outlets
     
-    override func viewDidLoad() {
+    @IBOutlet weak var mapView: MKMapView!
+    
+    // MARK: - Properties
+    
+    var coordinates: CLLocationCoordinate2D!
+    
+    
+    // MARK: - Housekeeping
+    
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
+        let longPressGesture = UILongPressGestureRecognizer.init(target: self, action:"mapLongPress:")
+        longPressGesture.minimumPressDuration = 0.5
+        self.mapView.addGestureRecognizer(longPressGesture)
+        self.mapView.delegate = self;
     }
 
-    override func didReceiveMemoryWarning() {
+    override func didReceiveMemoryWarning()
+    {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
+    // MARK: Core Data
+    
     lazy var moc = {
         CoreDataManager.sharedInstance().managedObjectContext
     } ()
@@ -31,6 +50,47 @@ class ViewController: UIViewController {
         return context
         
     } ()
+    
+    // MARK: - Map View
+    
+    func mapLongPress (sender:UILongPressGestureRecognizer) -> Void
+    {
+        if (sender.state == .Began) {
+            let location = sender.locationInView(self.mapView)
+            self.coordinates = mapView.convertPoint(location, toCoordinateFromView: self.mapView)
+            print("Coordinates: \(self.coordinates.longitude) / \(self.coordinates.latitude)")
+        }
+        
+        if (sender.state == .Ended) {
+            let point = MKPointAnnotation.init()
+            point.coordinate = self.coordinates
+            self.mapView.addAnnotation(point)
+        }
+    }
+    
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView)
+    {
+        let photoAlbumViewController = self.storyboard?.instantiateViewControllerWithIdentifier("photoAlbumViewController") as! PhotoAlbumViewController?
+        mapView.deselectAnnotation(view.annotation, animated: false)
+        self.createPinEntity((view.annotation?.coordinate)!)
+        photoAlbumViewController?.coordinates.longitude = (view.annotation?.coordinate.longitude)!
+        photoAlbumViewController?.coordinates.latitude = (view.annotation?.coordinate.latitude)!
+        self.navigationController?.pushViewController(photoAlbumViewController!, animated: true)
+    }
+    
+    func createPinEntity(location: CLLocationCoordinate2D)
+    {
+        let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: moc)
+        let pin = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: moc)
+        pin.setValue(location.longitude, forKey: "longitude")
+        pin.setValue(location.latitude, forKey: "latitude")
+        
+        do {
+            try moc.save()
+            
+        } catch let error as NSError {
+            print("error saving moc for pin: \(error)")
+        }
+    }
 }
 
-    
