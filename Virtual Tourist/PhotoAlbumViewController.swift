@@ -29,10 +29,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
     
     override func viewDidAppear(animated: Bool)
     {
-        let span = MKCoordinateSpanMake(mapView.region.span.longitudeDelta / 60, mapView.region.span.latitudeDelta / 60)
+        let span = MKCoordinateSpanMake(mapView.region.span.longitudeDelta / 200, mapView.region.span.latitudeDelta / 200)
         let region = MKCoordinateRegionMake(self.coordinates, span)
         mapView.setCenterCoordinate(self.coordinates, animated: true)
         mapView.setRegion(region, animated: true)
+        let p = FlickrRequestController()
+        p.getImagesAroundLocation(self.coordinates.latitude, lon:self.coordinates.longitude, page:1)
     }
 
     override func didReceiveMemoryWarning()
