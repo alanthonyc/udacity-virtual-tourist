@@ -14,7 +14,9 @@ let BASE_URL = "https://api.flickr.com/services/rest/"
 
 class FlickrRequestController: NSObject {
     
-    func getImagesAroundLocation(lat: Double, lon: Double, page: Int) {
+    typealias CompletionHander = (result: AnyObject!, error: NSError?) -> Void
+    
+    func getImagesAroundLocation(lat: Double, lon: Double, page: Int, completionHandler: CompletionHander) {
         
         let latString = "\(lat)"
         let lonString = "\(lon)"
