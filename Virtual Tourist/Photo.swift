@@ -12,7 +12,8 @@ import CoreData
 class Photo: NSManagedObject {
     
     struct Keys {
-        static let Url = "url"
+        static let fileSystemUrl = "fileSystemUrl"
+        static let flickrUrl = "flickrUrl"
         static let Pin = "pin"
     }
 
@@ -24,7 +25,8 @@ class Photo: NSManagedObject {
         
         let entity =  NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         super.init(entity: entity,insertIntoManagedObjectContext: context)
-        url = dictionary[Keys.Url] as? String
+        fileSystemUrl = dictionary[Keys.fileSystemUrl] as? String
+        flickrUrl = dictionary[Keys.flickrUrl] as? String
         pin = dictionary[Keys.Pin] as? Pin
     }
 }

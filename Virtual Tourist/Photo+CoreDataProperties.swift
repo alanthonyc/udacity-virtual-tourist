@@ -14,7 +14,8 @@ import CoreData
 
 extension Photo {
 
-    @NSManaged var url: String?
+    @NSManaged var fileSystemUrl: String?
+    @NSManaged var flickrUrl: String?
     @NSManaged var pin: Pin?
 
 }

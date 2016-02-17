@@ -112,11 +112,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
     func createPinEntity(location: CLLocationCoordinate2D)
     {
         let pinEntity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: moc)
-        let photoEntity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: moc)
         let pin = NSManagedObject(entity: pinEntity!, insertIntoManagedObjectContext: moc)
-        let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc)
-        photo.setValue("test://this_is_a_test_url", forKey: "url")
-        photo.setValue(pin, forKey: "pin")
         pin.setValue(location.longitude, forKey: "longitude")
         pin.setValue(location.latitude, forKey: "latitude")
         saveMoc()
