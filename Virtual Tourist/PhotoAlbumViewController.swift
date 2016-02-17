@@ -37,6 +37,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         self.collectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier:reuseId)
         self.collectionView.backgroundColor = UIColor.whiteColor()
         self.view.addSubview(self.collectionView)
+        
+        let point = MKPointAnnotation.init()
+        point.coordinate = self.coordinates
+        self.mapView.addAnnotation(point)
     }
     
     override func viewDidAppear(animated: Bool)

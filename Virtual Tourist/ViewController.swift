@@ -30,6 +30,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
         longPressGesture.minimumPressDuration = 0.5
         self.mapView.addGestureRecognizer(longPressGesture)
         self.mapView.delegate = self;
+        let pins = fetchAllPins()
+        addPinsFromDataStore(pins)
     }
 
     override func didReceiveMemoryWarning()
@@ -43,6 +45,15 @@ class ViewController: UIViewController, MKMapViewDelegate {
         CoreDataManager.sharedInstance().managedObjectContext
     } ()
     
+    func saveMoc() {
+        do {
+            try moc.save()
+        
+        } catch let error as NSError {
+            print("error saving moc: \(error)")
+        }
+    }
+    
     lazy var scratchContext: NSManagedObjectContext = {
         
         var context = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
@@ -51,7 +62,27 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
     } ()
     
+    func fetchAllPins() -> [Pin] {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        do {
+            return try moc.executeFetchRequest(fetchRequest) as! [Pin]
+            
+        } catch let error as NSError {
+            print("Error fetching pins: \(error)")
+            return [Pin]()
+        }
+    }
+    
     // MARK: - Map View
+    
+    func addPinsFromDataStore(pins: [Pin]) {
+        for pin in pins {
+            let point = MKPointAnnotation.init()
+            point.coordinate = CLLocationCoordinate2DMake(pin.latitude as! Double, pin.longitude as! Double)
+            self.mapView.addAnnotation(point)
+        }
+    }
     
     func mapLongPress (sender:UILongPressGestureRecognizer) -> Void
     {
@@ -65,6 +96,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
             let point = MKPointAnnotation.init()
             point.coordinate = self.coordinates
             self.mapView.addAnnotation(point)
+            self.createPinEntity(point.coordinate)
         }
     }
     
@@ -72,7 +104,6 @@ class ViewController: UIViewController, MKMapViewDelegate {
     {
         let photoAlbumViewController = self.storyboard?.instantiateViewControllerWithIdentifier("photoAlbumViewController") as! PhotoAlbumViewController?
         mapView.deselectAnnotation(view.annotation, animated: false)
-        self.createPinEntity((view.annotation?.coordinate)!)
         photoAlbumViewController?.coordinates.longitude = (view.annotation?.coordinate.longitude)!
         photoAlbumViewController?.coordinates.latitude = (view.annotation?.coordinate.latitude)!
         self.navigationController?.pushViewController(photoAlbumViewController!, animated: true)
@@ -88,13 +119,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
         photo.setValue(pin, forKey: "pin")
         pin.setValue(location.longitude, forKey: "longitude")
         pin.setValue(location.latitude, forKey: "latitude")
-        
-        do {
-            try moc.save()
-            
-        } catch let error as NSError {
-            print("error saving moc for pin: \(error)")
-        }
+        saveMoc()
     }
 }
 
