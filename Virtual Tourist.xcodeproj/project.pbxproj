@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6B48F68C1C746FEB000BB7F9 /* PhotoAlbumViewController+CollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B48F68B1C746FEB000BB7F9 /* PhotoAlbumViewController+CollectionViewLayout.swift */; };
 		6B568BB71C705ADC00F30539 /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B568BB61C705ADC00F30539 /* PhotoAlbumViewController.swift */; };
 		6B5B20BA1C7314A300C997C6 /* PhotosAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5B20B91C7314A300C997C6 /* PhotosAPI.swift */; };
 		6B5B20C61C7334AE00C997C6 /* Photo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5B20C41C7334AE00C997C6 /* Photo+CoreDataProperties.swift */; };
@@ -43,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6B48F68B1C746FEB000BB7F9 /* PhotoAlbumViewController+CollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoAlbumViewController+CollectionViewLayout.swift"; sourceTree = "<group>"; };
 		6B568BB61C705ADC00F30539 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
 		6B5B20B91C7314A300C997C6 /* PhotosAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosAPI.swift; sourceTree = "<group>"; };
 		6B5B20C41C7334AE00C997C6 /* Photo+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				6B6087CD1C4C7991001F96DF /* AppDelegate.swift */,
 				6B6087CF1C4C7991001F96DF /* ViewController.swift */,
 				6B568BB61C705ADC00F30539 /* PhotoAlbumViewController.swift */,
+				6B48F68B1C746FEB000BB7F9 /* PhotoAlbumViewController+CollectionViewLayout.swift */,
 				6B5B20BB1C731B3F00C997C6 /* Model */,
 				6B5B20B91C7314A300C997C6 /* PhotosAPI.swift */,
 				6B6087D11C4C7991001F96DF /* Main.storyboard */,
@@ -300,6 +303,7 @@
 				6B5B20CB1C7334CE00C997C6 /* Pin.swift in Sources */,
 				6B6087D61C4C7991001F96DF /* Virtual_Tourist.xcdatamodeld in Sources */,
 				6B5B20BA1C7314A300C997C6 /* PhotosAPI.swift in Sources */,
+				6B48F68C1C746FEB000BB7F9 /* PhotoAlbumViewController+CollectionViewLayout.swift in Sources */,
 				6B5E880F1C584C010010FFBC /* CoreDataManager.swift in Sources */,
 				6B6087CE1C4C7991001F96DF /* AppDelegate.swift in Sources */,
 			);

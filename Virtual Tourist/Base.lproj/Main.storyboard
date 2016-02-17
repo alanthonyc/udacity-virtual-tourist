@@ -53,14 +53,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GNX-YX-ivp">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <color key="backgroundColor" red="0.74191702250000002" green="0.80839747210000001" blue="0.88627457620000005" alpha="1" colorSpace="deviceRGB"/>
-                            </scrollView>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="FiZ-Xu-QyH">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="140"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="180"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="140" id="z1h-sy-0zh"/>
+                                    <constraint firstAttribute="height" constant="180" id="z1h-sy-0zh"/>
                                 </constraints>
                             </mapView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sge-zB-Bx4">
@@ -79,22 +75,43 @@
                                     <constraint firstItem="CPE-3j-39k" firstAttribute="centerX" secondItem="sge-zB-Bx4" secondAttribute="centerX" id="qyO-NZ-6bx"/>
                                 </constraints>
                             </view>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="kwM-PY-YIz">
+                                <rect key="frame" x="20" y="180" width="560" height="376"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="tEe-dn-ZbI">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Ajp-6X-t5V">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="GNX-YX-ivp" secondAttribute="trailing" constant="-20" id="40J-Es-BBg"/>
                             <constraint firstItem="N1J-Ok-au9" firstAttribute="top" secondItem="sge-zB-Bx4" secondAttribute="bottom" id="45Y-6f-Uzm"/>
                             <constraint firstAttribute="trailingMargin" secondItem="sge-zB-Bx4" secondAttribute="trailing" constant="-20" id="4SJ-aY-SSt"/>
-                            <constraint firstItem="N1J-Ok-au9" firstAttribute="top" secondItem="GNX-YX-ivp" secondAttribute="bottom" id="DdR-gG-Edr"/>
                             <constraint firstAttribute="trailingMargin" secondItem="FiZ-Xu-QyH" secondAttribute="trailing" constant="-20" id="NbX-uY-RhJ"/>
+                            <constraint firstItem="sge-zB-Bx4" firstAttribute="top" secondItem="kwM-PY-YIz" secondAttribute="bottom" id="Tde-p5-D12"/>
                             <constraint firstItem="FiZ-Xu-QyH" firstAttribute="leading" secondItem="x3Z-3x-brO" secondAttribute="leadingMargin" constant="-20" id="dh5-s1-2qi"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="kwM-PY-YIz" secondAttribute="trailing" id="fe0-8C-h44"/>
                             <constraint firstItem="sge-zB-Bx4" firstAttribute="leading" secondItem="x3Z-3x-brO" secondAttribute="leadingMargin" constant="-20" id="gDc-Mg-KtW"/>
-                            <constraint firstItem="GNX-YX-ivp" firstAttribute="top" secondItem="vgM-0G-Bqr" secondAttribute="bottom" constant="-20" id="kVv-zb-AGl"/>
-                            <constraint firstItem="GNX-YX-ivp" firstAttribute="leading" secondItem="x3Z-3x-brO" secondAttribute="leadingMargin" constant="-20" id="vkb-Sb-xPc"/>
+                            <constraint firstItem="kwM-PY-YIz" firstAttribute="top" secondItem="FiZ-Xu-QyH" secondAttribute="bottom" id="gmS-qz-oDf"/>
+                            <constraint firstItem="kwM-PY-YIz" firstAttribute="leading" secondItem="x3Z-3x-brO" secondAttribute="leadingMargin" id="sfh-1n-Hie"/>
                             <constraint firstItem="FiZ-Xu-QyH" firstAttribute="top" secondItem="vgM-0G-Bqr" secondAttribute="bottom" constant="-20" id="ziw-Nr-JyV"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="collectionView" destination="kwM-PY-YIz" id="a5S-d0-yyj"/>
                         <outlet property="mapView" destination="FiZ-Xu-QyH" id="xHN-jj-715"/>
                     </connections>
                 </viewController>

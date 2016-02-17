@@ -9,11 +9,14 @@
 import UIKit
 import MapKit
 
-class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
+private let reuseId = "CollectionViewCell"
+
+class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDataSource {
 
     // MARK: - IB Outlets
     
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var collectionView: UICollectionView!
     
     // MARK: - Properties
     
@@ -27,11 +30,18 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
         self.coordinates = CLLocationCoordinate2DMake(0, 0)
     }
     
+    override func viewDidLoad()
+    {
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+        self.collectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier:reuseId)
+        self.collectionView.backgroundColor = UIColor.whiteColor()
+        self.view.addSubview(self.collectionView)
+    }
+    
     override func viewDidAppear(animated: Bool)
     {
-//        let span = MKCoordinateSpanMake(mapView.region.span.longitudeDelta / 200, mapView.region.span.latitudeDelta / 200)
-//        let region = MKCoordinateRegionMake(self.coordinates, span)
-        let region = MKCoordinateRegionMakeWithDistance(self.coordinates, 2000, 2000);
+        let region = MKCoordinateRegionMakeWithDistance(self.coordinates, 1600, 1600);
         mapView.setCenterCoordinate(self.coordinates, animated: true)
         mapView.setRegion(region, animated: true)
         let p = FlickrRequestController()
@@ -62,9 +72,28 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
 //                    
 //                    // Save the context
 //                    self.saveContext()
-                
             }
         }
+    }
+    
+    // MARK: UICollectionViewDataSource
+    
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int
+    {
+        return 1
+    }
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
+    {
+        return 21
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
+    {
+        let cell = (self.collectionView?.dequeueReusableCellWithReuseIdentifier(reuseId, forIndexPath: indexPath))!
+        cell.backgroundColor = .redColor()
+        cell.layer.cornerRadius = 4.0
+        return cell;
     }
 
     override func didReceiveMemoryWarning()
