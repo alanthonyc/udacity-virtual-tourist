@@ -95,17 +95,23 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-u9-mlY">
                                                     <rect key="frame" x="8" y="8" width="84" height="84"/>
                                                 </imageView>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="aIE-tI-4Hu">
+                                                    <rect key="frame" x="40" y="40" width="20" height="20"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <constraints>
+                                            <constraint firstItem="aIE-tI-4Hu" firstAttribute="centerX" secondItem="Ajp-6X-t5V" secondAttribute="centerX" id="94D-np-D3m"/>
                                             <constraint firstItem="0bo-u9-mlY" firstAttribute="leading" secondItem="Ajp-6X-t5V" secondAttribute="leadingMargin" id="9sR-eY-h9X"/>
                                             <constraint firstAttribute="bottomMargin" secondItem="0bo-u9-mlY" secondAttribute="bottom" id="Pb3-Fz-dmt"/>
                                             <constraint firstItem="0bo-u9-mlY" firstAttribute="top" secondItem="Ajp-6X-t5V" secondAttribute="topMargin" id="SCy-Q2-wdz"/>
                                             <constraint firstAttribute="trailingMargin" secondItem="0bo-u9-mlY" secondAttribute="trailing" id="Ssb-jI-DPd"/>
+                                            <constraint firstItem="aIE-tI-4Hu" firstAttribute="centerY" secondItem="Ajp-6X-t5V" secondAttribute="centerY" id="gTc-Bw-oW4"/>
                                         </constraints>
                                         <size key="customSize" width="100" height="100"/>
                                         <connections>
+                                            <outlet property="activityIndicator" destination="aIE-tI-4Hu" id="fJ4-e6-S2b"/>
                                             <outlet property="imageCell" destination="0bo-u9-mlY" id="Ipe-FO-GhH"/>
                                         </connections>
                                     </collectionViewCell>

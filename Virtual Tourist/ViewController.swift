@@ -19,6 +19,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
     // MARK: - Properties
     
     var coordinates: CLLocationCoordinate2D!
+    var pinDictionary: [MKPointAnnotation: Pin]!
     
     
     // MARK: - Housekeeping
@@ -30,6 +31,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
         longPressGesture.minimumPressDuration = 0.5
         self.mapView.addGestureRecognizer(longPressGesture)
         self.mapView.delegate = self;
+        self.pinDictionary = [MKPointAnnotation: Pin]()
         let pins = fetchAllPins()
         addPinsFromDataStore(pins)
     }
@@ -81,6 +83,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
             let point = MKPointAnnotation.init()
             point.coordinate = CLLocationCoordinate2DMake(pin.latitude as! Double, pin.longitude as! Double)
             self.mapView.addAnnotation(point)
+            self.pinDictionary[point] = pin
         }
     }
     
@@ -96,7 +99,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
             let point = MKPointAnnotation.init()
             point.coordinate = self.coordinates
             self.mapView.addAnnotation(point)
-            self.createPinEntity(point.coordinate)
+            self.pinDictionary[point] = self.createPinEntity(point.coordinate)
         }
     }
     
@@ -106,16 +109,18 @@ class ViewController: UIViewController, MKMapViewDelegate {
         mapView.deselectAnnotation(view.annotation, animated: false)
         photoAlbumViewController?.coordinates.longitude = (view.annotation?.coordinate.longitude)!
         photoAlbumViewController?.coordinates.latitude = (view.annotation?.coordinate.latitude)!
+        photoAlbumViewController?.pin = pinDictionary[view.annotation as! MKPointAnnotation]
         self.navigationController?.pushViewController(photoAlbumViewController!, animated: true)
     }
     
-    func createPinEntity(location: CLLocationCoordinate2D)
+    func createPinEntity(location: CLLocationCoordinate2D) -> Pin
     {
         let pinEntity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: moc)
         let pin = NSManagedObject(entity: pinEntity!, insertIntoManagedObjectContext: moc)
         pin.setValue(location.longitude, forKey: "longitude")
         pin.setValue(location.latitude, forKey: "latitude")
         saveMoc()
+        return pin as! Pin
     }
 }
 

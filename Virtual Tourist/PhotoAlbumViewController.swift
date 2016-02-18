@@ -22,9 +22,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     // MARK: - Properties
     
     var coordinates: CLLocationCoordinate2D!
-    var pin: MKPointAnnotation?
+    var pinAnnotation: MKPointAnnotation?
     var maxPage: Int?
-    var image: UIImage?
+    var tempImage: UIImage?
+    var pin: Pin?
     
     // MARK: - Housekeeping
 
@@ -44,12 +45,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let point = MKPointAnnotation.init()
         point.coordinate = self.coordinates
         self.mapView.addAnnotation(point)
-        self.pin = point
+        self.pinAnnotation = point
         self.maxPage = 1
         
         let tempUrl = NSURL(string:"https://farm3.staticflickr.com/2670/4104750510_ca07dc7255.jpg")
-        let imageData = NSData(contentsOfURL: tempUrl!)
-        self.image = UIImage(data: imageData!)
+        let tempImageData = NSData(contentsOfURL: tempUrl!)
+        self.tempImage = UIImage(data: tempImageData!)
     }
     
     override func viewDidAppear(animated: Bool)
@@ -102,7 +103,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc)
         photo.setValue("test://this_is_a_test_url", forKey: "fileSystemUrl")
         photo.setValue("test://this_is_a_test_url", forKey: "flickrUrl")
-        photo.setValue(self.pin, forKey: "pin")
+        photo.setValue(self.pinAnnotation, forKey: "pin")
     }
     
     // MARK: UICollectionViewDataSource
@@ -122,9 +123,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let cell = self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseId, forIndexPath: indexPath) as! CollectionViewCell
         cell.backgroundColor = UIColor.lightGrayColor()
         cell.layer.cornerRadius = 4.0
-        if (self.image != nil) {
-            cell.imageCell.image = self.image!
-        }
+        cell.activityIndicator.startAnimating()
+        cell.activityIndicator.alpha = 1.0
         return cell;
     }
 
