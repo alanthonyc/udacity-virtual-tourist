@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-private let sectionInsets = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 50.0, right: 10.0)
+private let sectionInsets = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 20.0, right: 10.0)
 
 extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout {
     

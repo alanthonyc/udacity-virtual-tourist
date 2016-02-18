@@ -59,7 +59,7 @@
                                     <constraint firstAttribute="height" constant="180" id="z1h-sy-0zh"/>
                                 </constraints>
                             </mapView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sge-zB-Bx4">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sge-zB-Bx4" userLabel="FooterView">
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CPE-3j-39k">
@@ -85,19 +85,34 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Ajp-6X-t5V">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CollectionViewCell" id="Ajp-6X-t5V" customClass="CollectionViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0bo-u9-mlY">
+                                                    <rect key="frame" x="8" y="8" width="84" height="84"/>
+                                                </imageView>
+                                            </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <constraints>
+                                            <constraint firstItem="0bo-u9-mlY" firstAttribute="leading" secondItem="Ajp-6X-t5V" secondAttribute="leadingMargin" id="9sR-eY-h9X"/>
+                                            <constraint firstAttribute="bottomMargin" secondItem="0bo-u9-mlY" secondAttribute="bottom" id="Pb3-Fz-dmt"/>
+                                            <constraint firstItem="0bo-u9-mlY" firstAttribute="top" secondItem="Ajp-6X-t5V" secondAttribute="topMargin" id="SCy-Q2-wdz"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="0bo-u9-mlY" secondAttribute="trailing" id="Ssb-jI-DPd"/>
+                                        </constraints>
+                                        <size key="customSize" width="100" height="100"/>
+                                        <connections>
+                                            <outlet property="imageCell" destination="0bo-u9-mlY" id="Ipe-FO-GhH"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="N1J-Ok-au9" firstAttribute="top" secondItem="sge-zB-Bx4" secondAttribute="bottom" id="45Y-6f-Uzm"/>
                             <constraint firstAttribute="trailingMargin" secondItem="sge-zB-Bx4" secondAttribute="trailing" constant="-20" id="4SJ-aY-SSt"/>

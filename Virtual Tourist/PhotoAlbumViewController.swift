@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 import MapKit
 
 private let reuseId = "CollectionViewCell"
@@ -21,6 +22,9 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     // MARK: - Properties
     
     var coordinates: CLLocationCoordinate2D!
+    var pin: MKPointAnnotation?
+    var maxPage: Int?
+    var image: UIImage?
     
     // MARK: - Housekeeping
 
@@ -34,13 +38,19 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
-        self.collectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier:reuseId)
+        self.collectionView.registerClass(CollectionViewCell.self, forCellWithReuseIdentifier:reuseId)
         self.collectionView.backgroundColor = UIColor.whiteColor()
         self.view.addSubview(self.collectionView)
         
         let point = MKPointAnnotation.init()
         point.coordinate = self.coordinates
         self.mapView.addAnnotation(point)
+        self.pin = point
+        self.maxPage = 1
+        
+        let tempUrl = NSURL(string:"https://farm3.staticflickr.com/2670/4104750510_ca07dc7255.jpg")
+        let imageData = NSData(contentsOfURL: tempUrl!)
+        self.image = UIImage(data: imageData!)
     }
     
     override func viewDidAppear(animated: Bool)
@@ -52,32 +62,48 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         p.getImagesAroundLocation(self.coordinates.latitude, lon:self.coordinates.longitude, page:1) {
             JSONResult, error in
             if let error = error {
-                //error handling
                 print("Error: \(error)")
                 
-            } else {
-                // success
-                // i.e. update view controller here, e.g. from favorite actors:
-//                if let moviesDictionaries = JSONResult.valueForKey("cast") as? [[String : AnyObject]] {
-//                    
-//                    // Parse the array of movies dictionaries
-//                    _ = moviesDictionaries.map() { (dictionary: [String : AnyObject]) -> Movie in
-//                        let movie = Movie(dictionary: dictionary, context: self.sharedContext)
-//                        
-//                        movie.actor = self.actor
-//                        
-//                        return movie
-//                    }
-//                    
-//                    // Update the table on the main thread
-//                    dispatch_async(dispatch_get_main_queue()) {
-//                        self.tableView.reloadData()
-//                    }
-//                    
-//                    // Save the context
-//                    self.saveContext()
+            } else { // success
+                
+                let photosDictionary = JSONResult
+                let photos = photosDictionary["photo"] as! NSArray
+                print("Pics: \(photos.count)")
+                for pic in photos {
+                    print("Pic id: \(pic["id"]), url:\(pic["url_m"])")
+                }
+                let pic1 = photos[1]
+                let photoUrl = pic1["url_m"] as! String
+                p.getImage(photoUrl, completionHandler: {
+                    imageData, error in
+                    if let error = error {
+                        print("Error retrieving image: \(error)")
+                        
+                    } else {
+                        let photo = imageData as! NSData
+                        _ =  UIImage(data: photo)
+                    }
+                })
             }
         }
+    }
+    
+    func loadImages(onPage: Int) {
+        
+    }
+    
+    // MARK: Core Data
+    
+    lazy var moc = {
+        CoreDataManager.sharedInstance().managedObjectContext
+    } ()
+    
+    func createPhotoEntity() {
+        let photoEntity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: moc)
+        let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc)
+        photo.setValue("test://this_is_a_test_url", forKey: "fileSystemUrl")
+        photo.setValue("test://this_is_a_test_url", forKey: "flickrUrl")
+        photo.setValue(self.pin, forKey: "pin")
     }
     
     // MARK: UICollectionViewDataSource
@@ -94,9 +120,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
     {
-        let cell = (self.collectionView?.dequeueReusableCellWithReuseIdentifier(reuseId, forIndexPath: indexPath))!
-        cell.backgroundColor = .redColor()
+        let cell = self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseId, forIndexPath: indexPath) as! CollectionViewCell
+        cell.backgroundColor = UIColor.lightGrayColor()
         cell.layer.cornerRadius = 4.0
+        if (self.image != nil) {
+            cell.imageCell.image = self.image!
+        }
         return cell;
     }
 
