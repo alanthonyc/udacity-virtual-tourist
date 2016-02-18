@@ -38,7 +38,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
-        self.collectionView.registerClass(CollectionViewCell.self, forCellWithReuseIdentifier:reuseId)
         self.collectionView.backgroundColor = UIColor.whiteColor()
         self.view.addSubview(self.collectionView)
         
