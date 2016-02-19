@@ -12,19 +12,18 @@ import Foundation
 let API_KEY = "3a521be533d5763d391a30d272ed398e"
 let METHOD_SEARCH = "flickr.photos.search"
 let BASE_URL = "https://api.flickr.com/services/rest/"
-let DEFAULT_PICS_PER_PAGE = 21
 
 class FlickrRequestController: NSObject
 {
     
     typealias CompletionHander = (result: AnyObject!, error: NSError?) -> Void
     
-    func getImagesAroundLocation(lat: Double, lon: Double, page: Int, completionHandler: CompletionHander)
+    func getImagesAroundLocation(lat: Double, lon: Double, page: Int, picsPerPage: Int, completionHandler: CompletionHander)
     {
         let latString = "\(lat)"
         let lonString = "\(lon)"
         let pageString = "\(page)"
-        let picsPerPageString = "\(DEFAULT_PICS_PER_PAGE)"
+        let picsPerPageString = "\(picsPerPage)"
         let methodArguments = [
             "method": METHOD_SEARCH,
             "api_key": API_KEY,

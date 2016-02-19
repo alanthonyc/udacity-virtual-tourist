@@ -14,6 +14,7 @@ struct Keys
     static let Longitude = "longitude"
     static let Latitude = "latitude"
     static let Photos = "photos"
+    static let Page = "page"
 }
 
 class Pin: NSManagedObject
@@ -29,5 +30,6 @@ class Pin: NSManagedObject
         super.init(entity: entity,insertIntoManagedObjectContext: context)
         longitude = dictionary[Keys.Longitude] as! Double
         latitude = dictionary[Keys.Latitude] as! Double
+        page = dictionary[Keys.Page] as! Int
     }
 }

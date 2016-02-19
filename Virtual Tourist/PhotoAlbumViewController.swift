@@ -79,7 +79,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func loadImages(onPage: Int)
     {
         print("loading images...")
-        FlickrRequestController().getImagesAroundLocation(self.coordinates.latitude, lon:self.coordinates.longitude, page:self.currentPage) {
+        FlickrRequestController().getImagesAroundLocation(self.coordinates.latitude, lon:self.coordinates.longitude, page:self.currentPage, picsPerPage: NUMBER_OF_CELLS) {
             JSONResult, error in
             if let error = error {
                 print("Error: \(error)")
@@ -113,15 +113,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         CoreDataManager.sharedInstance().managedObjectContext
     } ()
-    
-    func createPhotoEntity()
-    {
-        let photoEntity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: moc)
-        let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc)
-        photo.setValue("test://this_is_a_test_url", forKey: "fileSystemUrl")
-        photo.setValue("test://this_is_a_test_url", forKey: "flickrUrl")
-        photo.setValue(self.pinAnnotation, forKey: "pin")
-    }
     
     // MARK: UICollectionViewDataSource
     

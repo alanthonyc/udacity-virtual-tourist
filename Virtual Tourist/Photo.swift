@@ -16,6 +16,7 @@ class Photo: NSManagedObject
         static let fileSystemUrl = "fileSystemUrl"
         static let flickrUrl = "flickrUrl"
         static let Pin = "pin"
+        static let flickrId = "flickrId"
     }
 
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
@@ -29,6 +30,7 @@ class Photo: NSManagedObject
         super.init(entity: entity,insertIntoManagedObjectContext: context)
         fileSystemUrl = dictionary[Keys.fileSystemUrl] as? String
         flickrUrl = dictionary[Keys.flickrUrl] as? String
+        flickrId = dictionary[Keys.flickrId] as? String
         pin = dictionary[Keys.Pin] as? Pin
     }
 }
