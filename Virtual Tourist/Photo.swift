@@ -14,6 +14,7 @@ class Photo: NSManagedObject
     struct Keys
     {
         static let fileSystemUrl = "fileSystemUrl"
+        static let filename = "filename"
         static let flickrUrl = "flickrUrl"
         static let Pin = "pin"
         static let flickrId = "flickrId"
@@ -29,6 +30,7 @@ class Photo: NSManagedObject
         let entity =  NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         super.init(entity: entity,insertIntoManagedObjectContext: context)
         fileSystemUrl = dictionary[Keys.fileSystemUrl] as? String
+        filename = dictionary[Keys.filename] as? String
         flickrUrl = dictionary[Keys.flickrUrl] as? String
         flickrId = dictionary[Keys.flickrId] as? String
         pin = dictionary[Keys.Pin] as? Pin

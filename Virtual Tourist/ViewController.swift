@@ -113,8 +113,6 @@ class ViewController: UIViewController, MKMapViewDelegate
     {
         let photoAlbumViewController = self.storyboard?.instantiateViewControllerWithIdentifier("photoAlbumViewController") as! PhotoAlbumViewController?
         mapView.deselectAnnotation(view.annotation, animated: false)
-        photoAlbumViewController?.coordinates.longitude = (view.annotation?.coordinate.longitude)!
-        photoAlbumViewController?.coordinates.latitude = (view.annotation?.coordinate.latitude)!
         photoAlbumViewController?.pin = pinDictionary[view.annotation as! MKPointAnnotation]
         self.navigationController?.pushViewController(photoAlbumViewController!, animated: true)
     }
@@ -143,6 +141,7 @@ class ViewController: UIViewController, MKMapViewDelegate
                     let photo = self.createPhotoEntity(pin as! Pin)
                     photo.setValue(flickrUrl, forKey: "flickrUrl")
                     photo.setValue(flickrId, forKey: "flickrId")
+                    photo.setValue(flickrId, forKey: "filename")
                     FlickrRequestController().getImage(flickrUrl, completionHandler: {
                         imageData, error in
                         if let error = error {
@@ -175,16 +174,17 @@ class ViewController: UIViewController, MKMapViewDelegate
         data.writeToFile(path, atomically: true)
         return path
     }
+}
+
+
+// MARK: - Helper
+
+func pathForIdentifier(identifier: String) -> String
+{
+    let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+    let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)
     
-    // MARK: - Helper
-    
-    func pathForIdentifier(identifier: String) -> String
-    {
-        let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-        let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)
-        
-        return fullURL.path!
-    }
+    return fullURL.path!
 }
 
 

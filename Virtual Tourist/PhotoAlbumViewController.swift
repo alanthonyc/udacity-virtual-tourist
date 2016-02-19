@@ -15,7 +15,7 @@ private let reuseId = "CollectionViewCell"
 let NUMBER_OF_SECTIONS = 1
 let NUMBER_OF_CELLS = 21
 
-class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDataSource
+class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDataSource, NSFetchedResultsControllerDelegate
 {
     // MARK: - IB Outlets
     
@@ -24,39 +24,27 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     // MARK: - Properties
     
-    var coordinates: CLLocationCoordinate2D!
-    var pinAnnotation: MKPointAnnotation?
+    var pin: Pin?
     var maxPage: Int!
     var currentPage: Int!
-    var tempImage: UIImage?
-    var pin: Pin?
     
     // MARK: - Housekeeping
 
     override func awakeFromNib()
     {
         super.awakeFromNib()
-        self.coordinates = CLLocationCoordinate2DMake(0, 0)
     }
     
     override func viewDidLoad()
     {
-        self.collectionView.dataSource = self
-        self.collectionView.delegate = self
-        self.collectionView.backgroundColor = UIColor.whiteColor()
-        self.view.addSubview(self.collectionView)
-        
-        let point = MKPointAnnotation.init()
-        point.coordinate = self.coordinates
-        self.mapView.addAnnotation(point)
-        self.pinAnnotation = point
-        self.maxPage = 1
-        self.currentPage = 1
-        
-        // TODO: delete
-        let tempUrl = NSURL(string:"https://farm3.staticflickr.com/2670/4104750510_ca07dc7255.jpg")
-        let tempImageData = NSData(contentsOfURL: tempUrl!)
-        self.tempImage = UIImage(data: tempImageData!)
+        configureCollectionView()
+        configureMapAnnotation()
+        frc.delegate = self
+        do {
+            try frc.performFetch()
+        } catch {
+            print("Error performing fetch.")
+        }
     }
     
     override func viewWillAppear(animated: Bool)
@@ -71,15 +59,54 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     override func viewDidAppear(animated: Bool)
     {
-        let region = MKCoordinateRegionMakeWithDistance(self.coordinates, 1600, 1600);
-        mapView.setCenterCoordinate(self.coordinates, animated: true)
+        let coordinates = CLLocationCoordinate2DMake(self.pin!.latitude as! Double, self.pin!.longitude as! Double)
+        let region = MKCoordinateRegionMakeWithDistance(coordinates, 1600, 1600);
+        mapView.setCenterCoordinate(coordinates, animated: true)
         mapView.setRegion(region, animated: true)
     }
+    
+    override func didReceiveMemoryWarning()
+    {
+        super.didReceiveMemoryWarning()
+    }
+    
+    // MARK: --- View Configuration
+    
+    func configureCollectionView()
+    {
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+        self.collectionView.backgroundColor = UIColor.whiteColor()
+        self.view.addSubview(self.collectionView)
+        self.maxPage = 1
+        self.currentPage = 1
+    }
+    
+    func configureMapAnnotation()
+    {
+        let point = MKPointAnnotation.init()
+        point.coordinate = CLLocationCoordinate2DMake(self.pin!.latitude as! Double, self.pin!.longitude as! Double)
+        self.mapView.addAnnotation(point)
+    }
+    
+    // MARK: - NSFetchedResultsController
+    
+    lazy var frc: NSFetchedResultsController =
+    {
+        let request = NSFetchRequest(entityName: "Photo")
+        request.predicate = NSPredicate(format: "pin == %@", self.pin!)
+        request.sortDescriptors = []
+        
+        let controller = NSFetchedResultsController(fetchRequest: request, managedObjectContext: self.moc, sectionNameKeyPath: nil, cacheName: nil)
+        return controller
+    } ()
+    
+    // ...
     
     func loadImages(onPage: Int)
     {
         print("loading images...")
-        FlickrRequestController().getImagesAroundLocation(self.coordinates.latitude, lon:self.coordinates.longitude, page:self.currentPage, picsPerPage: NUMBER_OF_CELLS) {
+        FlickrRequestController().getImagesAroundLocation(pin!.latitude as! Double, lon:pin!.longitude as! Double, page:self.currentPage, picsPerPage: NUMBER_OF_CELLS) {
             JSONResult, error in
             if let error = error {
                 print("Error: \(error)")
@@ -129,15 +156,101 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
     {
         let cell = self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseId, forIndexPath: indexPath) as! CollectionViewCell
+        configureCell(cell, indexPath: indexPath)
+        return cell;
+    }
+    
+    func configureCell(cell: CollectionViewCell, indexPath: NSIndexPath)
+    {
         cell.backgroundColor = UIColor.lightGrayColor()
         cell.layer.cornerRadius = 4.0
         cell.activityIndicator.startAnimating()
         cell.activityIndicator.alpha = 1.0
-        return cell;
+        
+        let photo = self.frc.objectAtIndexPath(indexPath) as! Photo
+        
+        if photo.fileSystemUrl == nil || photo.fileSystemUrl == "" {
+            print("Photo not downloaded (yet?).")
+            // download photo
+            
+        } else if photo.fileSystemUrl != nil {
+            var documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+            documentsPath.appendContentsOf("/\(photo.filename!)")
+            let data = NSData(contentsOfFile: documentsPath)
+            let image = UIImage(data: data!)
+            cell.imageCell.image = image
+            cell.activityIndicator.stopAnimating()
+        }
     }
-
-    override func didReceiveMemoryWarning()
+    
+    // MARK: NSFetchedResultsControllerDelegate
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController)
     {
-        super.didReceiveMemoryWarning()
+//        self.collectionView... (get ready for updates)
     }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController)
+    {
+//        collectionView.performBatchUpdates({() -> Void in
+//            
+//            for indexPath in self.insertedIndexPaths {
+//                self.collectionView.insertItemsAtIndexPaths([indexPath])
+//            }
+//            
+//            for indexPath in self.deletedIndexPaths {
+//                self.collectionView.deleteItemsAtIndexPaths([indexPath])
+//            }
+//            
+//            for indexPath in self.updatedIndexPaths {
+//                self.collectionView.reloadItemsAtIndexPaths([indexPath])
+//            }
+//            
+//            }, completion: nil)
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?)
+    {
+        switch type{
+            case .Insert:
+                print("Insert an item.")
+                print("indexPath: \(indexPath) newIndexPath: \(newIndexPath)")
+                break
+            case .Delete:
+                print("Delete an item.")
+                break
+            case .Update:
+                print("Update an item.")
+                break
+            case .Move:
+                print("Move an item. We don't expect to see this in this app.")
+                break
+        }
+    }
+    
+//    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType)
+//    {
+//    
+//    }
+    
+//    func controller(controller: NSFetchedResultsController, sectionIndexTitleForSectionName sectionName: String) -> String?
+//    {
+//
+//    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

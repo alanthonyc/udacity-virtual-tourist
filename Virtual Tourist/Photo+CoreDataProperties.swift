@@ -18,4 +18,5 @@ extension Photo
     @NSManaged var flickrUrl: String?
     @NSManaged var pin: Pin?
     @NSManaged var flickrId: String?
+    @NSManaged var filename: String?
 }
