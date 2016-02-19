@@ -162,10 +162,13 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func configureCell(cell: CollectionViewCell, indexPath: NSIndexPath)
     {
-        cell.backgroundColor = UIColor.lightGrayColor()
+        cell.backgroundColor = UIColor.groupTableViewBackgroundColor()
         cell.layer.cornerRadius = 4.0
         cell.activityIndicator.startAnimating()
         cell.activityIndicator.alpha = 1.0
+        cell.imageCell.layer.shadowOpacity = 0.5
+        cell.imageCell.layer.shadowColor = UIColor.darkGrayColor().CGColor
+        cell.imageCell.layer.shadowOffset = CGSizeMake(-2, 2)
         
         let photo = self.frc.objectAtIndexPath(indexPath) as! Photo
         
