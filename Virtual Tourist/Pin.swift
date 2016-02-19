@@ -9,20 +9,22 @@
 import Foundation
 import CoreData
 
-struct Keys {
+struct Keys
+{
     static let Longitude = "longitude"
     static let Latitude = "latitude"
     static let Photos = "photos"
 }
 
-class Pin: NSManagedObject {
-
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+class Pin: NSManagedObject
+{
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
+    {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
-        
+    init(dictionary: [String : AnyObject], context: NSManagedObjectContext)
+    {
         let entity =  NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
         super.init(entity: entity,insertIntoManagedObjectContext: context)
         longitude = dictionary[Keys.Longitude] as! Double

@@ -12,10 +12,9 @@
 import Foundation
 import CoreData
 
-extension Photo {
-
+extension Photo
+{
     @NSManaged var fileSystemUrl: String?
     @NSManaged var flickrUrl: String?
     @NSManaged var pin: Pin?
-
 }

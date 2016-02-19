@@ -12,8 +12,11 @@ import MapKit
 
 private let reuseId = "CollectionViewCell"
 
-class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDataSource {
+let NUMBER_OF_SECTIONS = 1
+let NUMBER_OF_CELLS = 21
 
+class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDataSource
+{
     // MARK: - IB Outlets
     
     @IBOutlet weak var mapView: MKMapView!
@@ -23,7 +26,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     var coordinates: CLLocationCoordinate2D!
     var pinAnnotation: MKPointAnnotation?
-    var maxPage: Int?
+    var maxPage: Int!
+    var currentPage: Int!
     var tempImage: UIImage?
     var pin: Pin?
     
@@ -47,10 +51,22 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         self.mapView.addAnnotation(point)
         self.pinAnnotation = point
         self.maxPage = 1
+        self.currentPage = 1
         
+        // TODO: delete
         let tempUrl = NSURL(string:"https://farm3.staticflickr.com/2670/4104750510_ca07dc7255.jpg")
         let tempImageData = NSData(contentsOfURL: tempUrl!)
         self.tempImage = UIImage(data: tempImageData!)
+    }
+    
+    override func viewWillAppear(animated: Bool)
+    {
+        if pin?.photos!.count > 0 {
+            print("photos found")
+            
+        } else {
+            loadImages(1)
+        }
     }
     
     override func viewDidAppear(animated: Bool)
@@ -58,14 +74,17 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let region = MKCoordinateRegionMakeWithDistance(self.coordinates, 1600, 1600);
         mapView.setCenterCoordinate(self.coordinates, animated: true)
         mapView.setRegion(region, animated: true)
-        let p = FlickrRequestController()
-        p.getImagesAroundLocation(self.coordinates.latitude, lon:self.coordinates.longitude, page:1) {
+    }
+    
+    func loadImages(onPage: Int)
+    {
+        print("loading images...")
+        FlickrRequestController().getImagesAroundLocation(self.coordinates.latitude, lon:self.coordinates.longitude, page:self.currentPage) {
             JSONResult, error in
             if let error = error {
                 print("Error: \(error)")
                 
-            } else { // success
-                
+            } else {
                 let photosDictionary = JSONResult
                 let photos = photosDictionary["photo"] as! NSArray
                 print("Pics: \(photos.count)")
@@ -74,7 +93,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 }
                 let pic1 = photos[1]
                 let photoUrl = pic1["url_m"] as! String
-                p.getImage(photoUrl, completionHandler: {
+                FlickrRequestController().getImage(photoUrl, completionHandler: {
                     imageData, error in
                     if let error = error {
                         print("Error retrieving image: \(error)")
@@ -88,17 +107,15 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         }
     }
     
-    func loadImages(onPage: Int) {
-        
-    }
-    
     // MARK: Core Data
     
-    lazy var moc = {
+    lazy var moc =
+    {
         CoreDataManager.sharedInstance().managedObjectContext
     } ()
     
-    func createPhotoEntity() {
+    func createPhotoEntity()
+    {
         let photoEntity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: moc)
         let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc)
         photo.setValue("test://this_is_a_test_url", forKey: "fileSystemUrl")
@@ -110,12 +127,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int
     {
-        return 1
+        return NUMBER_OF_SECTIONS
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
     {
-        return 21
+        return NUMBER_OF_CELLS
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell

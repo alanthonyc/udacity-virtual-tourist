@@ -10,8 +10,8 @@ import UIKit
 import CoreData
 import MapKit
 
-class ViewController: UIViewController, MKMapViewDelegate {
-
+class ViewController: UIViewController, MKMapViewDelegate
+{
     // MARK: - IB Outlets
     
     @IBOutlet weak var mapView: MKMapView!
@@ -43,11 +43,13 @@ class ViewController: UIViewController, MKMapViewDelegate {
 
     // MARK: Core Data
     
-    lazy var moc = {
+    lazy var moc =
+    {
         CoreDataManager.sharedInstance().managedObjectContext
     } ()
     
-    func saveMoc() {
+    func saveMoc()
+    {
         do {
             try moc.save()
         
@@ -56,16 +58,16 @@ class ViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    lazy var scratchContext: NSManagedObjectContext = {
-        
+    lazy var scratchContext: NSManagedObjectContext =
+    {
         var context = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
         context.persistentStoreCoordinator = CoreDataManager.sharedInstance().persistentStoreCoordinator
         return context
         
     } ()
     
-    func fetchAllPins() -> [Pin] {
-        
+    func fetchAllPins() -> [Pin]
+    {
         let fetchRequest = NSFetchRequest(entityName: "Pin")
         do {
             return try moc.executeFetchRequest(fetchRequest) as! [Pin]
@@ -78,7 +80,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
     
     // MARK: - Map View
     
-    func addPinsFromDataStore(pins: [Pin]) {
+    func addPinsFromDataStore(pins: [Pin])
+    {
         for pin in pins {
             let point = MKPointAnnotation.init()
             point.coordinate = CLLocationCoordinate2DMake(pin.latitude as! Double, pin.longitude as! Double)

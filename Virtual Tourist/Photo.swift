@@ -9,20 +9,22 @@
 import Foundation
 import CoreData
 
-class Photo: NSManagedObject {
-    
-    struct Keys {
+class Photo: NSManagedObject
+{
+    struct Keys
+    {
         static let fileSystemUrl = "fileSystemUrl"
         static let flickrUrl = "flickrUrl"
         static let Pin = "pin"
     }
 
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
+    {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
-        
+    init(dictionary: [String : AnyObject], context: NSManagedObjectContext)
+    {
         let entity =  NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         super.init(entity: entity,insertIntoManagedObjectContext: context)
         fileSystemUrl = dictionary[Keys.fileSystemUrl] as? String

@@ -19,8 +19,8 @@ class FlickrRequestController: NSObject
     
     typealias CompletionHander = (result: AnyObject!, error: NSError?) -> Void
     
-    func getImagesAroundLocation(lat: Double, lon: Double, page: Int, completionHandler: CompletionHander) {
-        
+    func getImagesAroundLocation(lat: Double, lon: Double, page: Int, completionHandler: CompletionHander)
+    {
         let latString = "\(lat)"
         let lonString = "\(lon)"
         let pageString = "\(page)"

@@ -11,31 +11,33 @@ import CoreData
 
 private let SQLITE_FILENAME = "Virtual_Tourist.sqlite"
 
-class CoreDataManager {
-    
-    class func sharedInstance() -> CoreDataManager {
-        struct Static {
+class CoreDataManager
+{
+    class func sharedInstance() -> CoreDataManager
+    {
+        struct Static
+        {
             static let instance = CoreDataManager()
         }
         return Static.instance
     }
 
-    lazy var applicationDocumentsDirectory: NSURL = {
-        print("dir")
+    lazy var applicationDocumentsDirectory: NSURL =
+    {
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
         return urls[urls.count-1]
         
     } ()
 
-    lazy var managedObjectModel: NSManagedObjectModel = {
-        print("momd")
+    lazy var managedObjectModel: NSManagedObjectModel =
+    {
         let modelURL = NSBundle.mainBundle().URLForResource("Virtual_Tourist", withExtension: "momd")!
         return NSManagedObjectModel(contentsOfURL: modelURL)!
         
     } ()
 
-    lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
-        print("psc")
+    lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator =
+    {
         // Create the coordinator and store
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent(SQLITE_FILENAME)
@@ -60,21 +62,20 @@ class CoreDataManager {
             // // //
         }
         return coordinator
-        
     } ()
 
-    lazy var managedObjectContext: NSManagedObjectContext = {
-        print("moc")
+    lazy var managedObjectContext: NSManagedObjectContext =
+    {
         let coordinator = self.persistentStoreCoordinator
         var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
         return managedObjectContext
-
     } ()
 
     // MARK: - Core Data Saving Support
 
-    func saveContext () {
+    func saveContext ()
+    {
         if managedObjectContext.hasChanges {
             do {
                 try managedObjectContext.save()
