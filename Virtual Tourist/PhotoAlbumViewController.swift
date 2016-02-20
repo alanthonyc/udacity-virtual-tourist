@@ -139,6 +139,13 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         }
     }
     
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath)
+    {
+        let photoToDelete = frc.objectAtIndexPath(indexPath) as! Photo
+        photoToDelete.deleteImage()
+        self.moc.deleteObject(photoToDelete)
+    }
+    
     // MARK: NSFetchedResultsControllerDelegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController)
@@ -157,11 +164,11 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 self.collectionView.insertItemsAtIndexPaths([photo])
             }
             
-//            for indexPath in self.deletedPhotos
-//            {
-//                self.collectionView.deleteItemsAtIndexPaths([indexPath])
-//            }
-//            
+            for indexPath in self.deletedPhotos
+            {
+                self.collectionView.deleteItemsAtIndexPaths([indexPath])
+            }
+
             for photo in self.updatedPhotos
             {
                 self.collectionView.reloadItemsAtIndexPaths([photo])
@@ -177,7 +184,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 self.insertedPhotos.append(newIndexPath!)
                 break
             case .Delete:
-                print("Delete an item.")
+                self.deletedPhotos.append(indexPath!)
                 break
             case .Update:
                 self.updatedPhotos.append(indexPath!)

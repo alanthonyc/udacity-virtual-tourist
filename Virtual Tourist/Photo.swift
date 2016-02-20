@@ -63,4 +63,15 @@ class Photo: NSManagedObject
         }
         return nil
     }
+    
+    func deleteImage()
+    {
+        var documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+        documentsPath.appendContentsOf("/\(self.filename!)")
+        do {
+            try NSFileManager.defaultManager().removeItemAtPath(documentsPath)
+        } catch _ as NSError {
+            print("Error deleting image file at: \(documentsPath)")
+        }
+    }
 }
