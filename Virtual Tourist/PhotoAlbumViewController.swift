@@ -142,7 +142,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath)
     {
         let photoToDelete = frc.objectAtIndexPath(indexPath) as! Photo
-        photoToDelete.deleteImage()
         self.moc.deleteObject(photoToDelete)
     }
     

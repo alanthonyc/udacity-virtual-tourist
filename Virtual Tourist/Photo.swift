@@ -64,7 +64,7 @@ class Photo: NSManagedObject
         return nil
     }
     
-    func deleteImage()
+    override func prepareForDeletion()
     {
         var documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
         documentsPath.appendContentsOf("/\(self.filename!)")
