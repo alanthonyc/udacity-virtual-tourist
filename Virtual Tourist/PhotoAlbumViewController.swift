@@ -13,7 +13,8 @@ import MapKit
 private let reuseId = "CollectionViewCell"
 
 let NUMBER_OF_SECTIONS = 1
-let NUMBER_OF_CELLS = 21
+let MAX_NUMBER_OF_CELLS = 21
+let PHOTO_ALBUM_VC_IDENTIFIER = "photoAlbumViewController"
 
 class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDataSource, NSFetchedResultsControllerDelegate
 {
@@ -106,7 +107,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func loadImages(onPage: Int)
     {
         print("loading images...")
-        FlickrRequestController().getImagesAroundLocation(pin!.latitude as! Double, lon:pin!.longitude as! Double, page:self.currentPage, picsPerPage: NUMBER_OF_CELLS) {
+        FlickrRequestController().getImagesAroundLocation(pin!.latitude as! Double, lon:pin!.longitude as! Double, page:self.currentPage, picsPerPage: MAX_NUMBER_OF_CELLS) {
             JSONResult, error in
             if let error = error {
                 print("Error: \(error)")
@@ -116,20 +117,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 let photos = photosDictionary["photo"] as! NSArray
                 print("Pics: \(photos.count)")
                 for pic in photos {
-                    print("Pic id: \(pic["id"]), url:\(pic["url_m"])")
+                    self.pin?.attachPhoto(pic as! NSDictionary, moc: self.moc)
                 }
-                let pic1 = photos[1]
-                let photoUrl = pic1["url_m"] as! String
-                FlickrRequestController().getImage(photoUrl, completionHandler: {
-                    imageData, error in
-                    if let error = error {
-                        print("Error retrieving image: \(error)")
-                        
-                    } else {
-                        let photo = imageData as! NSData
-                        _ =  UIImage(data: photo)
-                    }
-                })
             }
         }
     }
@@ -150,7 +139,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
     {
-        return NUMBER_OF_CELLS
+        return (self.frc.fetchedObjects!.count)
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
@@ -169,12 +158,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         cell.imageCell.layer.shadowOpacity = 0.5
         cell.imageCell.layer.shadowColor = UIColor.darkGrayColor().CGColor
         cell.imageCell.layer.shadowOffset = CGSizeMake(-2, 2)
-        
+
         let photo = self.frc.objectAtIndexPath(indexPath) as! Photo
-        
         if photo.fileSystemUrl == nil || photo.fileSystemUrl == "" {
-            print("Photo not downloaded (yet?).")
-            // download photo
+            print("Photo has no url, not downloaded: \(indexPath)")
             
         } else if photo.fileSystemUrl != nil {
             var documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]

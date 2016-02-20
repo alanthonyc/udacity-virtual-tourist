@@ -13,9 +13,11 @@ let API_KEY = "3a521be533d5763d391a30d272ed398e"
 let METHOD_SEARCH = "flickr.photos.search"
 let BASE_URL = "https://api.flickr.com/services/rest/"
 
+let FLICKR_DICT_URLM = "url_m"
+let FLICKR_DICT_ID = "id"
+
 class FlickrRequestController: NSObject
 {
-    
     typealias CompletionHander = (result: AnyObject!, error: NSError?) -> Void
     
     func getImagesAroundLocation(lat: Double, lon: Double, page: Int, picsPerPage: Int, completionHandler: CompletionHander)
@@ -32,7 +34,7 @@ class FlickrRequestController: NSObject
             "lon": lonString,
             "radius": "1",
             "format": "json",
-            "extras": "url_m",
+            "extras": FLICKR_DICT_URLM,
             "per_page": picsPerPageString,
             "media": "photos",
             "page": pageString,
@@ -96,40 +98,40 @@ class FlickrRequestController: NSObject
         task.resume()
     }
     
-    func getImage(photoUrl: String, completionHandler: CompletionHander)
-    {
-        let session = NSURLSession.sharedSession()
-        let urlString = photoUrl
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
-            
-            guard (error == nil) else {
-                print("There was an error with your request: \(error)")
-                return
-            }
-            
-            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                if let response = response as? NSHTTPURLResponse {
-                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
-                } else if let response = response {
-                    print("Your request returned an invalid response! Response: \(response)!")
-                } else {
-                    print("Your request returned an invalid response!")
-                }
-                return
-            }
-            
-            if let imageData = NSData(contentsOfURL: url) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    completionHandler(result: imageData, error: error)
-                })
-            } else {
-                print("Image does not exist at \(url)")
-            }
-        }
-        task.resume()
-    }
+//    func getImage(photoUrl: String, completionHandler: CompletionHander)
+//    {
+//        let session = NSURLSession.sharedSession()
+//        let urlString = photoUrl
+//        let url = NSURL(string: urlString)!
+//        let request = NSURLRequest(URL: url)
+//        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+//            
+//            guard (error == nil) else {
+//                print("There was an error with your request: \(error)")
+//                return
+//            }
+//            
+//            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+//                if let response = response as? NSHTTPURLResponse {
+//                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
+//                } else if let response = response {
+//                    print("Your request returned an invalid response! Response: \(response)!")
+//                } else {
+//                    print("Your request returned an invalid response!")
+//                }
+//                return
+//            }
+//            
+//            if let imageData = NSData(contentsOfURL: url) {
+//                dispatch_async(dispatch_get_main_queue(), {
+//                    completionHandler(result: imageData, error: error)
+//                })
+//            } else {
+//                print("Image does not exist at \(url)")
+//            }
+//        }
+//        task.resume()
+//    }
     
     func escapedParameters(parameters: [String : AnyObject]) -> String
     {

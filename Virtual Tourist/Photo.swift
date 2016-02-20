@@ -9,6 +9,8 @@
 import Foundation
 import CoreData
 
+let ENTITY_NAME_PHOTO = "Photo"
+
 class Photo: NSManagedObject
 {
     struct Keys
@@ -27,7 +29,7 @@ class Photo: NSManagedObject
     
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext)
     {
-        let entity =  NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
+        let entity =  NSEntityDescription.entityForName(ENTITY_NAME_PHOTO, inManagedObjectContext: context)!
         super.init(entity: entity,insertIntoManagedObjectContext: context)
         fileSystemUrl = dictionary[Keys.fileSystemUrl] as? String
         filename = dictionary[Keys.filename] as? String

@@ -10,16 +10,18 @@ import Foundation
 import CoreData
 import UIKit
 
-struct Keys
-{
-    static let Longitude = "longitude"
-    static let Latitude = "latitude"
-    static let Photos = "photos"
-    static let Page = "page"
-}
+let ENTITY_NAME_PIN = "Pin"
 
 class Pin: NSManagedObject
 {
+    struct Keys
+    {
+        static let Longitude = "longitude"
+        static let Latitude = "latitude"
+        static let Photos = "photos"
+        static let Page = "page"
+    }
+    
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
     {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -27,7 +29,7 @@ class Pin: NSManagedObject
     
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext)
     {
-        let entity =  NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
+        let entity =  NSEntityDescription.entityForName(ENTITY_NAME_PIN, inManagedObjectContext: context)!
         super.init(entity: entity,insertIntoManagedObjectContext: context)
         longitude = dictionary[Keys.Longitude] as! Double
         latitude = dictionary[Keys.Latitude] as! Double
@@ -36,17 +38,17 @@ class Pin: NSManagedObject
     
     func attachPhoto(photoDict: NSDictionary, moc: NSManagedObjectContext)
     {
-        let photoEntity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: moc)
+        let photoEntity = NSEntityDescription.entityForName(ENTITY_NAME_PHOTO, inManagedObjectContext: moc)
         let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc) as! Photo
-        photo.setValue(photoDict["url_m"], forKey: "flickrUrl")
-        photo.setValue(photoDict["id"], forKey: "flickrId")
-        photo.setValue(photoDict["id"], forKey: "filename")
-        photo.setValue(self, forKey: "pin")
+        photo.setValue(photoDict[FLICKR_DICT_URLM], forKey: Photo.Keys.flickrUrl)
+        photo.setValue(photoDict[FLICKR_DICT_ID], forKey: Photo.Keys.flickrId)
+        photo.setValue(photoDict[FLICKR_DICT_ID], forKey: Photo.Keys.filename)
+        photo.setValue(self, forKey: Photo.Keys.Pin)
         if let imageData = NSData(contentsOfURL: NSURL(string: photo.flickrUrl!)!) {
             dispatch_async(dispatch_get_main_queue(), {
                 let path = pathForIdentifier(photo.flickrId!)
                 let data = UIImagePNGRepresentation(UIImage(data: imageData)!)!
-                photo.setValue(path, forKey: "fileSystemUrl")
+                photo.setValue(path, forKey: Photo.Keys.fileSystemUrl)
                 data.writeToFile(path, atomically: true)
             })
             
