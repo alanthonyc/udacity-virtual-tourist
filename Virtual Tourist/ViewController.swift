@@ -12,6 +12,20 @@ import MapKit
 
 let DEFAULT_PIN_COLLECTION_NAME = "DefaultPinCollection"
 
+class DraggableAnnotation: NSObject, MKAnnotation {
+    var coordinate: CLLocationCoordinate2D
+    
+    init(coordinate: CLLocationCoordinate2D) {
+        self.coordinate = coordinate
+    }
+    
+    func coordinate(newCoordinate: CLLocationCoordinate2D) {
+        willChangeValueForKey("coordinate")
+        self.coordinate = newCoordinate
+        didChangeValueForKey("coordinate")
+    }
+}
+
 class ViewController: UIViewController, MKMapViewDelegate
 {
     // MARK: - IB Outlets
@@ -23,6 +37,7 @@ class ViewController: UIViewController, MKMapViewDelegate
     var coordinates: CLLocationCoordinate2D!
     var pinDictionary: [MKPointAnnotation: Pin]!
     var pinCollection: Collection!
+    var draggableAnnotation: DraggableAnnotation!
     
     
     // MARK: - Housekeeping
@@ -129,15 +144,32 @@ class ViewController: UIViewController, MKMapViewDelegate
     
     func mapLongPress (sender:UILongPressGestureRecognizer) -> Void
     {
-        if (sender.state == .Began) {
-            let location = sender.locationInView(self.mapView)
+        let location = sender.locationInView(self.mapView)
+        if (sender.state == .Began)
+        {
             self.coordinates = mapView.convertPoint(location, toCoordinateFromView: self.mapView)
+            self.draggableAnnotation = DraggableAnnotation.init(coordinate:self.coordinates)
+            self.mapView.addAnnotation(self.draggableAnnotation)
         }
-        if (sender.state == .Ended) {
-            let point = MKPointAnnotation.init()
-            point.coordinate = self.coordinates
-            self.mapView.addAnnotation(point)
-            self.pinDictionary[point] = self.createPinEntity(point.coordinate)
+        
+        if (sender.state == .Changed)
+        {
+            self.coordinates = mapView.convertPoint(location, toCoordinateFromView: self.mapView)
+            if self.draggableAnnotation != nil {
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.draggableAnnotation.coordinate(self.coordinates)
+                })
+            }
+        }
+        
+        if (sender.state == .Ended)
+        {
+            self.mapView.removeAnnotation(self.draggableAnnotation)
+            self.coordinates = mapView.convertPoint(location, toCoordinateFromView: self.mapView)
+            let pinAnnotation = MKPointAnnotation.init()
+            pinAnnotation.coordinate = self.coordinates
+            self.mapView.addAnnotation(pinAnnotation)
+            self.pinDictionary[pinAnnotation] = self.createPinEntity(self.coordinates)
         }
     }
     
