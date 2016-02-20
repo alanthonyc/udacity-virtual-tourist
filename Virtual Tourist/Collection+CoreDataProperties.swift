@@ -1,8 +1,8 @@
 //
-//  Pin+CoreDataProperties.swift
+//  Collection+CoreDataProperties.swift
 //  Virtual Tourist
 //
-//  Created by A. Anthony Castillo on 2/16/16.
+//  Created by A. Anthony Castillo on 2/19/16.
 //  Copyright © 2016 Alon Consulting. All rights reserved.
 //
 //  Choose "Create NSManagedObject Subclass…" from the Core Data editor menu
@@ -12,11 +12,8 @@
 import Foundation
 import CoreData
 
-extension Pin
+extension Collection
 {
-    @NSManaged var latitude: NSNumber?
-    @NSManaged var longitude: NSNumber?
-    @NSManaged var photos: NSSet?
-    @NSManaged var page: NSNumber?
-    @NSManaged var collection: Collection?
+    @NSManaged var name: String?
+    @NSManaged var pins: NSSet?
 }

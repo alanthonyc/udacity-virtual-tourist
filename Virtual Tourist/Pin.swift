@@ -18,6 +18,7 @@ class Pin: NSManagedObject
     {
         static let Longitude = "longitude"
         static let Latitude = "latitude"
+        static let Collection = "collection"
         static let Photos = "photos"
         static let Page = "page"
     }

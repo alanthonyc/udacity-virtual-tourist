@@ -98,41 +98,6 @@ class FlickrRequestController: NSObject
         task.resume()
     }
     
-//    func getImage(photoUrl: String, completionHandler: CompletionHander)
-//    {
-//        let session = NSURLSession.sharedSession()
-//        let urlString = photoUrl
-//        let url = NSURL(string: urlString)!
-//        let request = NSURLRequest(URL: url)
-//        let task = session.dataTaskWithRequest(request) { (data, response, error) in
-//            
-//            guard (error == nil) else {
-//                print("There was an error with your request: \(error)")
-//                return
-//            }
-//            
-//            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-//                if let response = response as? NSHTTPURLResponse {
-//                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
-//                } else if let response = response {
-//                    print("Your request returned an invalid response! Response: \(response)!")
-//                } else {
-//                    print("Your request returned an invalid response!")
-//                }
-//                return
-//            }
-//            
-//            if let imageData = NSData(contentsOfURL: url) {
-//                dispatch_async(dispatch_get_main_queue(), {
-//                    completionHandler(result: imageData, error: error)
-//                })
-//            } else {
-//                print("Image does not exist at \(url)")
-//            }
-//        }
-//        task.resume()
-//    }
-    
     func escapedParameters(parameters: [String : AnyObject]) -> String
     {
         var urlVars = [String]()
@@ -141,7 +106,6 @@ class FlickrRequestController: NSObject
             let stringValue = "\(value)"
             let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
             urlVars += [key + "=" + "\(escapedValue!)"]
-            
         }
         return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
     }

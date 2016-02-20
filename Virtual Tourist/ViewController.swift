@@ -10,6 +10,8 @@ import UIKit
 import CoreData
 import MapKit
 
+let DEFAULT_PIN_COLLECTION_NAME = "DefaultPinCollection"
+
 class ViewController: UIViewController, MKMapViewDelegate
 {
     // MARK: - IB Outlets
@@ -20,6 +22,7 @@ class ViewController: UIViewController, MKMapViewDelegate
     
     var coordinates: CLLocationCoordinate2D!
     var pinDictionary: [MKPointAnnotation: Pin]!
+    var pinCollection: Collection!
     
     
     // MARK: - Housekeeping
@@ -31,9 +34,11 @@ class ViewController: UIViewController, MKMapViewDelegate
         longPressGesture.minimumPressDuration = 0.5
         self.mapView.addGestureRecognizer(longPressGesture)
         self.mapView.delegate = self;
+        self.pinCollection = self.defaultCollection()
         self.pinDictionary = [MKPointAnnotation: Pin]()
         let pins = fetchAllPins()
         addPinsFromDataStore(pins)
+
     }
     
     override func viewWillDisappear(animated: Bool)
@@ -71,6 +76,30 @@ class ViewController: UIViewController, MKMapViewDelegate
         
     } ()
     
+    func defaultCollection() -> Collection?
+    {
+        let request = NSFetchRequest(entityName: ENTITY_NAME_COLLECTION)
+        request.predicate = NSPredicate(format: "name == %@", DEFAULT_PIN_COLLECTION_NAME)
+        request.fetchLimit = 1
+        request.sortDescriptors = []
+        do {
+            let result = try self.moc.executeFetchRequest(request) as NSArray
+            if result.count == 1 {
+                return (result.firstObject as! Collection)
+                
+            } else {
+                let collectionEntity = NSEntityDescription.entityForName(ENTITY_NAME_COLLECTION, inManagedObjectContext: self.moc)
+                let collection = NSManagedObject(entity: collectionEntity!, insertIntoManagedObjectContext: self.moc)
+                collection.setValue(DEFAULT_PIN_COLLECTION_NAME, forKey: Collection.Keys.Name)
+                self.saveMoc()
+                return (collection as! Collection)
+            }
+        } catch let error as NSError {
+            print("Error fetching default pin collection: \(error)")
+            return nil
+        }
+    }
+    
     func fetchAllPins() -> [Pin]
     {
         let fetchRequest = NSFetchRequest(entityName: "Pin")
@@ -92,6 +121,9 @@ class ViewController: UIViewController, MKMapViewDelegate
             point.coordinate = CLLocationCoordinate2DMake(pin.latitude as! Double, pin.longitude as! Double)
             self.mapView.addAnnotation(point)
             self.pinDictionary[point] = pin
+            if (pin.collection == nil) {
+                pin.setValue(self.pinCollection, forKey: Pin.Keys.Collection)
+            }
         }
     }
     
@@ -123,6 +155,7 @@ class ViewController: UIViewController, MKMapViewDelegate
         let pin = NSManagedObject(entity: pinEntity!, insertIntoManagedObjectContext: moc)
         pin.setValue(location.longitude, forKey: Pin.Keys.Longitude)
         pin.setValue(location.latitude, forKey: Pin.Keys.Latitude)
+        pin.setValue(self.pinCollection, forKey: Pin.Keys.Collection)
         pin.setValue(1, forKey: Pin.Keys.Page)
         FlickrRequestController().getImagesAroundLocation(location.latitude, lon:location.longitude, page:1, picsPerPage: MAX_NUMBER_OF_CELLS) {
             JSONResult, error in
@@ -131,7 +164,6 @@ class ViewController: UIViewController, MKMapViewDelegate
                 
             } else {
                 let photosDictionary = JSONResult
-                print("Photos Dict: \(photosDictionary)")
                 let photos = photosDictionary["photo"] as! NSArray
                 for pic in photos { (pin as! Pin).attachPhoto(pic as! NSDictionary, moc: self.moc) }
             }
@@ -140,7 +172,6 @@ class ViewController: UIViewController, MKMapViewDelegate
         return pin as! Pin
     }
 }
-
 
 // MARK: - Helper
 
