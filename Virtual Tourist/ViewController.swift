@@ -124,7 +124,6 @@ class ViewController: UIViewController, MKMapViewDelegate
         pin.setValue(location.longitude, forKey: "longitude")
         pin.setValue(location.latitude, forKey: "latitude")
         pin.setValue(1, forKey: "page")
-        saveMoc()
         
         FlickrRequestController().getImagesAroundLocation(location.latitude, lon:location.longitude, page:1, picsPerPage: NUMBER_OF_CELLS) {
             JSONResult, error in
@@ -136,44 +135,58 @@ class ViewController: UIViewController, MKMapViewDelegate
                 print("Photos Dict: \(photosDictionary)")
                 let photos = photosDictionary["photo"] as! NSArray
                 for pic in photos {
-                    let flickrUrl = pic["url_m"] as! String
-                    let flickrId = pic["id"] as! String
-                    let photo = self.createPhotoEntity(pin as! Pin)
-                    photo.setValue(flickrUrl, forKey: "flickrUrl")
-                    photo.setValue(flickrId, forKey: "flickrId")
-                    photo.setValue(flickrId, forKey: "filename")
-                    FlickrRequestController().getImage(flickrUrl, completionHandler: {
-                        imageData, error in
-                        if let error = error {
-                            print("Error retrieving image: \(error)")
-                            
-                        } else {
-                            let photoImage = imageData as! NSData
-                            let fileSystemPath = self.saveImage(UIImage(data: photoImage), withIdentifier: flickrId)
-                            photo.setValue(fileSystemPath, forKey: "fileSystemUrl")
-                        }
-                    })
+                    
+                    (pin as! Pin).attachPhoto(pic as! NSDictionary, moc: self.moc)
+                    
+//                    let flickrUrl = pic["url_m"] as! String
+//                    let flickrId = pic["id"] as! String
+//                    let photo = self.createPhotoEntity(pin as! Pin)
+//                    photo.setValue(flickrUrl, forKey: "flickrUrl")
+//                    photo.setValue(flickrId, forKey: "flickrId")
+//                    photo.setValue(flickrId, forKey: "filename")
+//                    
+//                    let imageUrl = NSURL(string: flickrUrl)
+//                    if let imageData = NSData(contentsOfURL: imageUrl!) {
+//                        dispatch_async(dispatch_get_main_queue(), {
+//////                            completionHandler(result: imageData, error: error)
+////                            let photoImage = imageData as! NSData
+//                            let fileSystemPath = self.saveImage(UIImage(data: imageData), withIdentifier: flickrId)
+//                            photo.setValue(fileSystemPath, forKey: "fileSystemUrl")
+//                        })
+//                    }
+//                    FlickrRequestController().getImage(flickrUrl, completionHandler: {
+//                        imageData, error in
+//                        if let error = error {
+//                            print("Error retrieving image: \(error)")
+//                            
+//                        } else {
+//                            let photoImage = imageData as! NSData
+//                            let fileSystemPath = self.saveImage(UIImage(data: photoImage), withIdentifier: flickrId)
+//                            photo.setValue(fileSystemPath, forKey: "fileSystemUrl")
+//                        }
+//                    })
                 }
             }
         }
+        saveMoc()
         return pin as! Pin
     }
     
-    func createPhotoEntity(pin: Pin) -> Photo
-    {
-        let photoEntity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: moc)
-        let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc)
-        photo.setValue(pin, forKey: "pin")
-        return photo as! Photo
-    }
+//    func createPhotoEntity(pin: Pin) -> Photo
+//    {
+//        let photoEntity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: moc)
+//        let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc)
+//        photo.setValue(pin, forKey: "pin")
+//        return photo as! Photo
+//    }
     
-    func saveImage(image: UIImage?, withIdentifier identifier: String) -> String
-    {
-        let path = pathForIdentifier(identifier)
-        let data = UIImagePNGRepresentation(image!)!
-        data.writeToFile(path, atomically: true)
-        return path
-    }
+//    func saveImage(image: UIImage?, withIdentifier identifier: String) -> String
+//    {
+//        let path = pathForIdentifier(identifier)
+//        let data = UIImagePNGRepresentation(image!)!
+//        data.writeToFile(path, atomically: true)
+//        return path
+//    }
 }
 
 

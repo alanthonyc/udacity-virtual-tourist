@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 struct Keys
 {
@@ -32,4 +33,37 @@ class Pin: NSManagedObject
         latitude = dictionary[Keys.Latitude] as! Double
         page = dictionary[Keys.Page] as! Int
     }
+    
+    func attachPhoto(photoDict: NSDictionary, moc: NSManagedObjectContext)
+    {
+        let photoEntity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: moc)
+        let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc) as! Photo
+        photo.setValue(photoDict["url_m"], forKey: "flickrUrl")
+        photo.setValue(photoDict["id"], forKey: "flickrId")
+        photo.setValue(photoDict["id"], forKey: "filename")
+        photo.setValue(self, forKey: "pin")
+        if let imageData = NSData(contentsOfURL: NSURL(string: photo.flickrUrl!)!) {
+            dispatch_async(dispatch_get_main_queue(), {
+                let path = pathForIdentifier(photo.flickrId!)
+                let data = UIImagePNGRepresentation(UIImage(data: imageData)!)!
+                photo.setValue(path, forKey: "fileSystemUrl")
+                data.writeToFile(path, atomically: true)
+            })
+            
+        } else {
+            print("Error downloading image at: \(photo.flickrUrl)")
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
