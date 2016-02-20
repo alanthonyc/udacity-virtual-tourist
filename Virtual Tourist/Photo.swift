@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 let ENTITY_NAME_PHOTO = "Photo"
 
@@ -36,5 +37,30 @@ class Photo: NSManagedObject
         flickrUrl = dictionary[Keys.flickrUrl] as? String
         flickrId = dictionary[Keys.flickrId] as? String
         pin = dictionary[Keys.Pin] as? Pin
+    }
+    
+    func image() -> UIImage?
+    {
+        if self.fileSystemUrl != nil && self.fileSystemUrl != "" {
+            var documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+            documentsPath.appendContentsOf("/\(self.filename!)")
+            let data = NSData(contentsOfFile: documentsPath)
+            if data != nil {
+                return UIImage(data: data!)
+            }
+            
+        } else if self.flickrUrl != nil && self.flickrUrl != "" {
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { () -> Void in
+                if let imageData = NSData(contentsOfURL: NSURL(string: self.flickrUrl!)!) {
+                    let path = pathForIdentifier(self.flickrId!)
+                    let image = UIImage(data: imageData)!
+                    let data = UIImagePNGRepresentation(image)!
+                    self.fileSystemUrl = path
+                    data.writeToFile(path, atomically: true)
+                }
+            })
+            return nil
+        }
+        return nil
     }
 }

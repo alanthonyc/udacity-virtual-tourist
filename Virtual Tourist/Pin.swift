@@ -32,9 +32,10 @@ class Pin: NSManagedObject
     {
         let entity =  NSEntityDescription.entityForName(ENTITY_NAME_PIN, inManagedObjectContext: context)!
         super.init(entity: entity,insertIntoManagedObjectContext: context)
-        longitude = dictionary[Keys.Longitude] as! Double
-        latitude = dictionary[Keys.Latitude] as! Double
-        page = dictionary[Keys.Page] as! Int
+        longitude = dictionary[Keys.Longitude] as? Double
+        latitude = dictionary[Keys.Latitude] as? Double
+        page = dictionary[Keys.Page] as? Int
+        collection = dictionary[Keys.Collection] as? Collection
     }
     
     func attachPhoto(photoDict: NSDictionary, moc: NSManagedObjectContext)
