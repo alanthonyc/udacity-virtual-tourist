@@ -43,9 +43,9 @@ class Photo: NSManagedObject
         pin = dictionary[Keys.Pin] as? Pin
     }
     
-    func image(completionHandler: CompletionHander) -> UIImage?
+    func image() -> UIImage?
     {
-        if self.fileSystemUrl != nil && self.fileSystemUrl != "" {
+        if self.fileSystemUrl != nil && self.fileSystemUrl! != "" {
             var documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
             documentsPath.appendContentsOf("/\(self.filename!)")
             let data = NSData(contentsOfFile: documentsPath)
@@ -55,22 +55,6 @@ class Photo: NSManagedObject
                 }
                 return UIImage(data: data!)
             }
-            
-        } else if self.flickrUrl != nil && self.flickrUrl != "" {
-            dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), { () -> Void in
-                if let imageData = NSData(contentsOfURL: NSURL(string: self.flickrUrl!)!) {
-                    let path = pathForIdentifier(self.flickrId!)
-                    let image = UIImage(data: imageData)!
-                    let data = UIImagePNGRepresentation(image)!
-                    self.fileSystemUrl = path
-                    data.writeToFile(path, atomically: true)
-                    self.downloaded = true
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        completionHandler(result: path, error: nil)
-                    })
-                }
-            })
-            return nil
         }
         return nil
     }

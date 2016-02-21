@@ -146,7 +146,6 @@
                     <connections>
                         <outlet property="collectionView" destination="kwM-PY-YIz" id="a5S-d0-yyj"/>
                         <outlet property="mapView" destination="FiZ-Xu-QyH" id="xHN-jj-715"/>
-                        <outlet property="newCollectionButton" destination="CPE-3j-39k" id="uN7-rI-yL8"/>
                         <outlet property="noImagesLabel" destination="Cug-zJ-hmw" id="W42-pz-2z1"/>
                     </connections>
                 </viewController>

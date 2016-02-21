@@ -21,6 +21,7 @@ class Pin: NSManagedObject
         static let Collection = "collection"
         static let Photos = "photos"
         static let Page = "page"
+        static let Pages = "pages"
         static let PhotosForPage = "photosForPage"
     }
     
@@ -36,14 +37,39 @@ class Pin: NSManagedObject
         longitude = dictionary[Keys.Longitude] as? Double
         latitude = dictionary[Keys.Latitude] as? Double
         page = dictionary[Keys.Page] as? Int
+        pages = dictionary[Keys.Pages] as? Int
         collection = dictionary[Keys.Collection] as? Collection
         photosForPage = dictionary[Keys.PhotosForPage] as? Int
     }
     
-    func attachPhoto(photoDict: NSDictionary, moc: NSManagedObjectContext)
+    func getImages()
     {
-        let photoEntity = NSEntityDescription.entityForName(ENTITY_NAME_PHOTO, inManagedObjectContext: moc)
-        let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc) as! Photo
+        FlickrRequestController().getImagesAroundLocation(self.latitude as! Double, lon:self.longitude as! Double, page:self.page as! Int, picsPerPage: MAX_NUMBER_OF_CELLS)
+            {
+                JSONResult, error in
+                if let error = error {
+                    print("Error pre-loading images for pin: \(error)")
+                    
+                } else {
+                    let photosDictionary = JSONResult
+                    self.pages = photosDictionary["pages"] as? NSNumber
+                    let photos = photosDictionary["photo"] as! NSArray
+                    self.photosForPage = photos.count
+                    for pic in photos
+                    {
+                        self.attachPhoto(pic as! NSDictionary)
+                    }
+                    for photo in self.photos!
+                    {
+                        self.downloadPhoto(photo as! Photo)
+                    }
+                }
+        }
+    }
+    
+    func attachPhoto(photoDict: NSDictionary)    {
+        let photoEntity = NSEntityDescription.entityForName(ENTITY_NAME_PHOTO, inManagedObjectContext: self.managedObjectContext!)
+        let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: self.managedObjectContext!) as! Photo
         
         let time = NSDate().timeIntervalSince1970
         let uniqueFilename = "\(photoDict[FLICKR_DICT_ID]!)\(time)"

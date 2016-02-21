@@ -18,6 +18,7 @@ extension Pin
     @NSManaged var longitude: NSNumber?
     @NSManaged var photos: NSSet?
     @NSManaged var page: NSNumber?
+    @NSManaged var pages: NSNumber?
     @NSManaged var collection: Collection?
     @NSManaged var photosForPage: NSNumber?
 }

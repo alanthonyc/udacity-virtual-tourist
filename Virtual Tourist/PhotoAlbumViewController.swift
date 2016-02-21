@@ -22,7 +22,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var newCollectionButton: UIButton!
     @IBOutlet weak var noImagesLabel: UILabel!
     
     // MARK: - Properties
@@ -55,20 +54,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     override func viewWillAppear(animated: Bool)
     {
-        self.newCollectionButton.enabled = false
         self.noImagesLabel.alpha = 1.0
-        let downloaded = photosAlreadyDownloaded()
-        print("Photo Album: \(downloaded) of \(self.pin!.photos!.count) downloaded.")
-        if downloaded! >= self.pin!.photosForPage as! Int
-        {
-            self.newCollectionButton.enabled = true
-            
-        } else {
-            if downloaded! < self.pin!.photos!.count
-            {
-                // downloading was interrupted, start over
-            }
-        }
     }
     
     override func viewDidAppear(animated: Bool)
@@ -108,6 +94,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     @IBAction func newCollectionButtonTapped()
     {
         print("button tapped")
+        deletePhotoAlbum()
     }
     
     // MARK: - NSFetchedResultsController
@@ -156,39 +143,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         for photo in self.pin!.photos!
         {
-            print("deleting photo: \(photo)")
             self.moc.deleteObject(photo as! Photo)
-        }
-        print("delete complete")
-    }
-    
-    // MARK: --- Count Photos Still Downloading
-    
-    func photosAlreadyDownloaded() -> Int?
-    {
-        let request = NSFetchRequest(entityName: ENTITY_NAME_PHOTO)
-        request.predicate = NSPredicate(format: "pin == %@ AND downloaded == 1", self.pin!)
-        request.sortDescriptors = []
-        do {
-            let result = try self.moc.executeFetchRequest(request)
-            return result.count
-        } catch _ as NSError {
-            print("Error counting downloaded photos.")
-            return nil
-        }
-    }
-    
-    func photosStillNotDownloaded() -> NSArray?
-    {
-        let request = NSFetchRequest(entityName: ENTITY_NAME_PHOTO)
-        request.predicate = NSPredicate(format: "pin == %@ AND downloaded == 0", self.pin!)
-        request.sortDescriptors = []
-        do {
-            let result = try self.moc.executeFetchRequest(request)
-            return result
-        } catch _ as NSError {
-            print("Error counting un-downloaded photos.")
-            return nil
         }
     }
     
@@ -244,14 +199,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         cell.imageCell.layer.shadowOffset = CGSizeMake(-2, 2)
 
         let photo = self.frc.objectAtIndexPath(indexPath) as! Photo
-        let image = photo.image { (result, error) -> Void in
-            let downloaded = self.photosAlreadyDownloaded()
-            let total = self.pin!.photosForPage
-            if downloaded! >= total as! Int {
-                print("Button Check x: \(downloaded) - \(total)")
-                self.newCollectionButton.enabled = true
-            }
-        } as UIImage?
+        let image = photo.image() as UIImage?
         if image != nil {
             cell.imageCell.image = image
             cell.activityIndicator.stopAnimating()
