@@ -11,6 +11,7 @@ import CoreData
 import MapKit
 
 let DEFAULT_PIN_COLLECTION_NAME = "DefaultPinCollection"
+let DEFAULT_PIN_CATEGORY_NAME = "DefaultPinCategory"
 
 class DraggableAnnotation: NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
@@ -37,6 +38,7 @@ class ViewController: UIViewController, MKMapViewDelegate
     var coordinates: CLLocationCoordinate2D!
     var pinDictionary: [MKPointAnnotation: Pin]!
     var pinCollection: Collection!
+    var pinCategory: Category!
     var draggableAnnotation: DraggableAnnotation!
     
     
@@ -50,6 +52,7 @@ class ViewController: UIViewController, MKMapViewDelegate
         self.mapView.addGestureRecognizer(longPressGesture)
         self.mapView.delegate = self;
         self.pinCollection = self.defaultCollection()
+        self.pinCategory = self.defaultCategory()
         self.pinDictionary = [MKPointAnnotation: Pin]()
         let pins = fetchAllPins()
         addPinsFromDataStore(pins)
@@ -115,6 +118,30 @@ class ViewController: UIViewController, MKMapViewDelegate
         }
     }
     
+    func defaultCategory() -> Category?
+    {
+        let request = NSFetchRequest(entityName: ENTITY_NAME_CATEGORY)
+        request.predicate = NSPredicate(format: "name == %@", DEFAULT_PIN_CATEGORY_NAME)
+        request.fetchLimit = 1
+        request.sortDescriptors = []
+        do {
+            let result = try self.moc.executeFetchRequest(request) as NSArray
+            if result.count == 1 {
+                return (result.firstObject as! Category)
+                
+            } else {
+                let categoryEntity = NSEntityDescription.entityForName(ENTITY_NAME_CATEGORY, inManagedObjectContext: self.moc)
+                let category = NSManagedObject(entity: categoryEntity!, insertIntoManagedObjectContext: self.moc)
+                category.setValue(DEFAULT_PIN_CATEGORY_NAME, forKey: Category.Keys.Name)
+                self.saveMoc()
+                return (category as! Category)
+            }
+        } catch let error as NSError {
+            print("Error fetching default pin category: \(error)")
+            return nil
+        }
+    }
+    
     func fetchAllPins() -> [Pin]
     {
         let fetchRequest = NSFetchRequest(entityName: "Pin")
@@ -138,6 +165,9 @@ class ViewController: UIViewController, MKMapViewDelegate
             self.pinDictionary[point] = pin
             if (pin.collection == nil) {
                 pin.setValue(self.pinCollection, forKey: Pin.Keys.Collection)
+            }
+            if (pin.category == nil) {
+                pin.setValue(self.pinCategory, forKey: Pin.Keys.Category)
             }
         }
     }
@@ -188,6 +218,7 @@ class ViewController: UIViewController, MKMapViewDelegate
         pin.setValue(location.longitude, forKey: Pin.Keys.Longitude)
         pin.setValue(location.latitude, forKey: Pin.Keys.Latitude)
         pin.setValue(self.pinCollection, forKey: Pin.Keys.Collection)
+        pin.setValue(self.pinCategory, forKey: Pin.Keys.Category)
         pin.setValue(0, forKey: Pin.Keys.PhotosForPage)
         pin.setValue(1, forKey: Pin.Keys.Page)
         (pin as! Pin).getImages()

@@ -19,6 +19,7 @@ class Pin: NSManagedObject
         static let Longitude = "longitude"
         static let Latitude = "latitude"
         static let Collection = "collection"
+        static let Category = "category"
         static let Photos = "photos"
         static let Page = "page"
         static let Pages = "pages"
@@ -39,6 +40,7 @@ class Pin: NSManagedObject
         page = dictionary[Keys.Page] as? Int
         pages = dictionary[Keys.Pages] as? Int
         collection = dictionary[Keys.Collection] as? Collection
+        category = dictionary[Keys.Category] as? Category
         photosForPage = dictionary[Keys.PhotosForPage] as? Int
     }
     

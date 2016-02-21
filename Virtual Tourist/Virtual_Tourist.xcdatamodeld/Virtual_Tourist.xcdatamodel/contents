@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="14F1605" minimumToolsVersion="Automatic">
+    <entity name="Category" representedClassName=".Category" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="pins" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pin" inverseName="category" inverseEntity="Pin" syncable="YES"/>
+    </entity>
     <entity name="Collection" representedClassName=".Collection" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="pins" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pin" inverseName="collection" inverseEntity="Pin" syncable="YES"/>
@@ -18,12 +22,14 @@
         <attribute name="page" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="pages" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="photosForPage" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="pins" inverseEntity="Category" syncable="YES"/>
         <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Collection" inverseName="pins" inverseEntity="Collection" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <elements>
         <element name="Collection" positionX="-27" positionY="54" width="128" height="75"/>
         <element name="Photo" positionX="-45" positionY="0" width="128" height="135"/>
-        <element name="Pin" positionX="-18" positionY="27" width="128" height="150"/>
+        <element name="Pin" positionX="-18" positionY="27" width="128" height="165"/>
+        <element name="Category" positionX="-27" positionY="72" width="128" height="75"/>
     </elements>
 </model>
