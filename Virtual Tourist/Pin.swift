@@ -52,6 +52,10 @@ class Pin: NSManagedObject
         
         photo.setValue(uniqueFilename, forKey: Photo.Keys.filename)
         photo.setValue(self, forKey: Photo.Keys.Pin)
+    }
+    
+    func downloadPhoto(photo: Photo)
+    {
         if let imageData = NSData(contentsOfURL: NSURL(string: photo.flickrUrl!)!) {
             dispatch_async(dispatch_get_main_queue(), {
                 let path = pathForIdentifier(photo.filename!)

@@ -64,10 +64,9 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             self.newCollectionButton.enabled = true
             
         } else {
-            if self.pin!.photos!.count != self.pin!.photosForPage!.integerValue
+            if downloaded! < self.pin!.photos!.count
             {
-                // download processing was interrupted, start over
-//                self.deletePhotoAlbum()
+                // downloading was interrupted, start over
             }
         }
     }

@@ -200,7 +200,13 @@ class ViewController: UIViewController, MKMapViewDelegate
                 let photosDictionary = JSONResult
                 let photos = photosDictionary["photo"] as! NSArray
                 pin.setValue(photos.count, forKey: Pin.Keys.PhotosForPage)
-                for pic in photos { (pin as! Pin).attachPhoto(pic as! NSDictionary, moc: self.moc) }
+                for pic in photos {
+                    (pin as! Pin).attachPhoto(pic as! NSDictionary, moc: self.moc)
+                }
+                for photo in (pin as! Pin).photos!
+                {
+                    (pin as! Pin).downloadPhoto(photo as! Photo)
+                }
             }
         }
         saveMoc()
