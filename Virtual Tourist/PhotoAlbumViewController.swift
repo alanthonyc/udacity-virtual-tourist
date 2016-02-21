@@ -22,6 +22,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var newCollectionButton: UIButton!
+    @IBOutlet weak var noImagesLabel: UILabel!
     
     // MARK: - Properties
     
@@ -49,6 +51,15 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         } catch {
             print("Error performing fetch.")
         }
+    }
+    
+    override func viewWillAppear(animated: Bool)
+    {
+        self.newCollectionButton.enabled = false
+        self.noImagesLabel.alpha = 1.0
+        // compare (self.pin!.photosForPage as! Int) to count of self.pin.photos that haven't downloaded yet
+        print("photos expected: \(self.pin!.photosForPage)")
+        print("photos already downloaded: \(photosAlreadyDownloaded())")
     }
     
     override func viewDidAppear(animated: Bool)
@@ -87,13 +98,30 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     lazy var frc: NSFetchedResultsController =
     {
-        let request = NSFetchRequest(entityName: "Photo")
+        let request = NSFetchRequest(entityName: ENTITY_NAME_PHOTO)
         request.predicate = NSPredicate(format: "pin == %@", self.pin!)
         request.sortDescriptors = []
+        request.fetchBatchSize = MAX_NUMBER_OF_CELLS
         
         let controller = NSFetchedResultsController(fetchRequest: request, managedObjectContext: self.moc, sectionNameKeyPath: nil, cacheName: nil)
         return controller
     } ()
+    
+    // MARK: Count Photos Still Downloading
+    
+    func photosAlreadyDownloaded() -> Int?
+    {
+        let request = NSFetchRequest(entityName: ENTITY_NAME_PHOTO)
+        request.predicate = NSPredicate(format: "pin == %@ AND downloaded == 1", self.pin!)
+        request.sortDescriptors = []
+        do {
+            let result = try self.moc.executeFetchRequest(request)
+            return result.count
+        } catch _ as NSError {
+            print("Error counting downloaded photos.")
+            return nil
+        }
+    }
     
     // MARK: Core Data
     
@@ -111,8 +139,23 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
     {
-        return (self.frc.fetchedObjects!.count)
+        let itemCount = self.frc.fetchedObjects!.count
+        if itemCount > 0 {
+            self.noImagesLabel.alpha = 0.0
+            self.collectionView.alpha = 1.0
+            return itemCount
+            
+        } else {
+            self.noImagesLabel.alpha = 1.0
+            self.collectionView.alpha = 0.0
+        }
+        return 0
     }
+    
+//    func collectionView(collectionView: UICollectionView, willDisplayCell cell: UICollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath)
+//    {
+//
+//    }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
     {
@@ -132,7 +175,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         cell.imageCell.layer.shadowOffset = CGSizeMake(-2, 2)
 
         let photo = self.frc.objectAtIndexPath(indexPath) as! Photo
-        let image = photo.image() as UIImage?
+        let image = photo.image { (result, error) -> Void in
+            print("Downloaded another photo, total photos: \(self.photosAlreadyDownloaded())")
+            print("Total photos expected: \(self.pin!.photosForPage)")
+        } as UIImage?
         if image != nil {
             cell.imageCell.image = image
             cell.activityIndicator.stopAnimating()

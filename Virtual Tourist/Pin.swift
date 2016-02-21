@@ -21,6 +21,7 @@ class Pin: NSManagedObject
         static let Collection = "collection"
         static let Photos = "photos"
         static let Page = "page"
+        static let PhotosForPage = "photosForPage"
     }
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
@@ -36,6 +37,7 @@ class Pin: NSManagedObject
         latitude = dictionary[Keys.Latitude] as? Double
         page = dictionary[Keys.Page] as? Int
         collection = dictionary[Keys.Collection] as? Collection
+        photosForPage = dictionary[Keys.PhotosForPage] as? Int
     }
     
     func attachPhoto(photoDict: NSDictionary, moc: NSManagedObjectContext)

@@ -14,6 +14,8 @@ let ENTITY_NAME_PHOTO = "Photo"
 
 class Photo: NSManagedObject
 {
+    typealias CompletionHander = (result: AnyObject!, error: NSError?) -> Void
+    
     struct Keys
     {
         static let fileSystemUrl = "fileSystemUrl"
@@ -21,6 +23,7 @@ class Photo: NSManagedObject
         static let flickrUrl = "flickrUrl"
         static let Pin = "pin"
         static let flickrId = "flickrId"
+        static let downloaded = "downloaded"
     }
 
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
@@ -36,16 +39,20 @@ class Photo: NSManagedObject
         filename = dictionary[Keys.filename] as? String
         flickrUrl = dictionary[Keys.flickrUrl] as? String
         flickrId = dictionary[Keys.flickrId] as? String
+        downloaded = dictionary[Keys.downloaded] as? NSNumber
         pin = dictionary[Keys.Pin] as? Pin
     }
     
-    func image() -> UIImage?
+    func image(completionHandler: CompletionHander) -> UIImage?
     {
         if self.fileSystemUrl != nil && self.fileSystemUrl != "" {
             var documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
             documentsPath.appendContentsOf("/\(self.filename!)")
             let data = NSData(contentsOfFile: documentsPath)
             if data != nil {
+                if self.downloaded != true {
+                    self.downloaded = true
+                }
                 return UIImage(data: data!)
             }
             
@@ -57,6 +64,8 @@ class Photo: NSManagedObject
                     let data = UIImagePNGRepresentation(image)!
                     self.fileSystemUrl = path
                     data.writeToFile(path, atomically: true)
+                    self.downloaded = true
+                    completionHandler(result: path, error: nil)
                 }
             })
             return nil

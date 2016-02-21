@@ -5,6 +5,7 @@
         <relationship name="pins" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pin" inverseName="collection" inverseEntity="Pin" syncable="YES"/>
     </entity>
     <entity name="Photo" representedClassName=".Photo" syncable="YES">
+        <attribute name="downloaded" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="filename" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="fileSystemUrl" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="flickrId" optional="YES" attributeType="String" syncable="YES"/>
@@ -15,12 +16,13 @@
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="page" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="photosForPage" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Collection" inverseName="pins" inverseEntity="Collection" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <elements>
         <element name="Collection" positionX="-27" positionY="54" width="128" height="75"/>
-        <element name="Photo" positionX="-45" positionY="0" width="128" height="120"/>
-        <element name="Pin" positionX="-18" positionY="27" width="128" height="120"/>
+        <element name="Photo" positionX="-45" positionY="0" width="128" height="135"/>
+        <element name="Pin" positionX="-18" positionY="27" width="128" height="135"/>
     </elements>
 </model>

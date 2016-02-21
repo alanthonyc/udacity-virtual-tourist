@@ -19,4 +19,5 @@ extension Pin
     @NSManaged var photos: NSSet?
     @NSManaged var page: NSNumber?
     @NSManaged var collection: Collection?
+    @NSManaged var photosForPage: NSNumber?
 }

@@ -188,6 +188,7 @@ class ViewController: UIViewController, MKMapViewDelegate
         pin.setValue(location.longitude, forKey: Pin.Keys.Longitude)
         pin.setValue(location.latitude, forKey: Pin.Keys.Latitude)
         pin.setValue(self.pinCollection, forKey: Pin.Keys.Collection)
+        pin.setValue(0, forKey: Pin.Keys.PhotosForPage)
         pin.setValue(1, forKey: Pin.Keys.Page)
         FlickrRequestController().getImagesAroundLocation(location.latitude, lon:location.longitude, page:1, picsPerPage: MAX_NUMBER_OF_CELLS) {
             JSONResult, error in
@@ -197,6 +198,7 @@ class ViewController: UIViewController, MKMapViewDelegate
             } else {
                 let photosDictionary = JSONResult
                 let photos = photosDictionary["photo"] as! NSArray
+                pin.setValue(photos.count, forKey: Pin.Keys.PhotosForPage)
                 for pic in photos { (pin as! Pin).attachPhoto(pic as! NSDictionary, moc: self.moc) }
             }
         }

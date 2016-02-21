@@ -117,11 +117,18 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Images" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cug-zJ-hmw">
+                                <rect key="frame" x="232" y="284.5" width="135.5" height="31.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="26"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="N1J-Ok-au9" firstAttribute="top" secondItem="sge-zB-Bx4" secondAttribute="bottom" id="45Y-6f-Uzm"/>
                             <constraint firstAttribute="trailingMargin" secondItem="sge-zB-Bx4" secondAttribute="trailing" constant="-20" id="4SJ-aY-SSt"/>
+                            <constraint firstItem="Cug-zJ-hmw" firstAttribute="centerX" secondItem="x3Z-3x-brO" secondAttribute="centerX" id="DqX-Y1-bhN"/>
                             <constraint firstAttribute="trailingMargin" secondItem="FiZ-Xu-QyH" secondAttribute="trailing" constant="-20" id="NbX-uY-RhJ"/>
                             <constraint firstItem="sge-zB-Bx4" firstAttribute="top" secondItem="kwM-PY-YIz" secondAttribute="bottom" id="Tde-p5-D12"/>
                             <constraint firstItem="FiZ-Xu-QyH" firstAttribute="leading" secondItem="x3Z-3x-brO" secondAttribute="leadingMargin" constant="-20" id="dh5-s1-2qi"/>
@@ -129,12 +136,15 @@
                             <constraint firstItem="sge-zB-Bx4" firstAttribute="leading" secondItem="x3Z-3x-brO" secondAttribute="leadingMargin" constant="-20" id="gDc-Mg-KtW"/>
                             <constraint firstItem="kwM-PY-YIz" firstAttribute="top" secondItem="FiZ-Xu-QyH" secondAttribute="bottom" id="gmS-qz-oDf"/>
                             <constraint firstItem="kwM-PY-YIz" firstAttribute="leading" secondItem="x3Z-3x-brO" secondAttribute="leadingMargin" id="sfh-1n-Hie"/>
+                            <constraint firstItem="Cug-zJ-hmw" firstAttribute="centerY" secondItem="x3Z-3x-brO" secondAttribute="centerY" id="xRT-1W-su8"/>
                             <constraint firstItem="FiZ-Xu-QyH" firstAttribute="top" secondItem="vgM-0G-Bqr" secondAttribute="bottom" constant="-20" id="ziw-Nr-JyV"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="kwM-PY-YIz" id="a5S-d0-yyj"/>
                         <outlet property="mapView" destination="FiZ-Xu-QyH" id="xHN-jj-715"/>
+                        <outlet property="newCollectionButton" destination="CPE-3j-39k" id="uN7-rI-yL8"/>
+                        <outlet property="noImagesLabel" destination="Cug-zJ-hmw" id="W42-pz-2z1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="B0r-gN-gQF" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -19,4 +19,5 @@ extension Photo
     @NSManaged var pin: Pin?
     @NSManaged var flickrId: String?
     @NSManaged var filename: String?
+    @NSManaged var downloaded: NSNumber? // boolean
 }
