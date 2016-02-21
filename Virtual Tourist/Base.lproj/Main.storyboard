@@ -30,9 +30,7 @@
                             <constraint firstItem="bCF-xX-oZI" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="cTV-Pi-mhP"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="mfk-96-9BL">
-                        <barButtonItem key="rightBarButtonItem" title="Edit" id="MDv-eQ-7B8"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="mfk-96-9BL"/>
                     <connections>
                         <outlet property="mapView" destination="bCF-xX-oZI" id="WUn-i5-D2Y"/>
                     </connections>
