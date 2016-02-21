@@ -22,7 +22,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var noImagesLabel: UILabel!
+    @IBOutlet weak var newCollectionButton: UIButton!
     
     // MARK: - Properties
     
@@ -54,7 +54,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     override func viewWillAppear(animated: Bool)
     {
-        self.noImagesLabel.alpha = 1.0
+        if self.pin!.photosForPage! == 0 || self.pin!.photosForPage == nil {
+            self.collectionView.alpha = 0.0
+            self.newCollectionButton.enabled = false
+        }
     }
     
     override func viewDidAppear(animated: Bool)
@@ -63,6 +66,16 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let region = MKCoordinateRegionMakeWithDistance(coordinates, 1600, 1600);
         mapView.setCenterCoordinate(coordinates, animated: true)
         mapView.setRegion(region, animated: true)
+    }
+    
+    override func viewWillDisappear(animated: Bool)
+    {
+        do {
+            try moc.save()
+            
+        } catch let error as NSError {
+            print("error saving moc: \(error)")
+        }
     }
     
     override func didReceiveMemoryWarning()
@@ -93,8 +106,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     @IBAction func newCollectionButtonTapped()
     {
-        print("button tapped")
         deletePhotoAlbum()
+        downloadNextAlbum()
     }
     
     // MARK: - NSFetchedResultsController
@@ -114,33 +127,26 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     // MARK: --- Download Photo Album
     
-    func downloadPhotoAlbum(page: Int)
+    func downloadNextAlbum()
     {
-//        FlickrRequestController().getImagesAroundLocation(self.pin!.latitude as! Double, lon:self.pin!.longitude as! Double, page:page, picsPerPage: MAX_NUMBER_OF_CELLS)
-//        {
-//            JSONResult, error in
-//            if let error = error
-//            {
-//                print("Error downloading images for album: \(error)")
-//                
-//            } else {
-//                let photosDictionary = JSONResult
-//                let photos = photosDictionary["photo"] as! NSArray
-//                self.pin!.setValue(photos.count, forKey: Pin.Keys.PhotosForPage)
-//                for pic in photos {
-//                    self.pin!.attachPhoto(pic as! NSDictionary, moc: self.moc)
-//                }
-//            }
-//        }
-//        let photos = self.photosStillNotDownloaded()!
-//        for photo in photos
-//        {
-//            print("photo to download: \(photo)")
-//        }
+        var nextPage = (self.pin!.page as! Int) + 1
+        if nextPage > self.pin!.pages as! Int {
+            nextPage = 1
+        }
+        self.pin!.page = nextPage
+        self.pin!.getImages()
     }
     
     func deletePhotoAlbum()
     {
+        for item in 1 ... self.collectionView.numberOfItemsInSection(0)
+        {
+            let indexPath = NSIndexPath(forItem: item, inSection: 0)
+            let cell = self.collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell?
+            if cell != nil {
+                cell!.imageCell.image = nil
+            }
+        }
         for photo in self.pin!.photos!
         {
             self.moc.deleteObject(photo as! Photo)
@@ -165,21 +171,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         let itemCount = self.frc.fetchedObjects!.count
         if itemCount > 0 {
-            self.noImagesLabel.alpha = 0.0
-            self.collectionView.alpha = 1.0
             return itemCount
-            
-        } else {
-            self.noImagesLabel.alpha = 1.0
-            self.collectionView.alpha = 0.0
         }
         return 0
     }
-    
-//    func collectionView(collectionView: UICollectionView, willDisplayCell cell: UICollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath)
-//    {
-//
-//    }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
     {
@@ -257,20 +252,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 self.updatedPhotos.append(indexPath!)
                 break
             case .Move:
-                print("Move Photo")
+                print("Move Photo: should not happen in this app.")
                 break
         }
     }
-    
-//    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType)
-//    {
-//    
-//    }
-    
-//    func controller(controller: NSFetchedResultsController, sectionIndexTitleForSectionName sectionName: String) -> String?
-//    {
-//
-//    }
 }
 
 
