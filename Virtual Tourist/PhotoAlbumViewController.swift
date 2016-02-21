@@ -58,10 +58,17 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         self.newCollectionButton.enabled = false
         self.noImagesLabel.alpha = 1.0
         let downloaded = photosAlreadyDownloaded()
+        print("Photo Album: \(downloaded) of \(self.pin!.photos!.count) downloaded.")
         if downloaded! >= self.pin!.photosForPage as! Int
         {
-            print("Button Check: \(downloaded)")
             self.newCollectionButton.enabled = true
+            
+        } else {
+            if self.pin!.photos!.count != self.pin!.photosForPage!.integerValue
+            {
+                // download processing was interrupted, start over
+//                self.deletePhotoAlbum()
+            }
         }
     }
     
@@ -117,7 +124,46 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         return controller
     } ()
     
-    // MARK: Count Photos Still Downloading
+    // MARK: - View Controller Actions
+    
+    // MARK: --- Download Photo Album
+    
+    func downloadPhotoAlbum(page: Int)
+    {
+//        FlickrRequestController().getImagesAroundLocation(self.pin!.latitude as! Double, lon:self.pin!.longitude as! Double, page:page, picsPerPage: MAX_NUMBER_OF_CELLS)
+//        {
+//            JSONResult, error in
+//            if let error = error
+//            {
+//                print("Error downloading images for album: \(error)")
+//                
+//            } else {
+//                let photosDictionary = JSONResult
+//                let photos = photosDictionary["photo"] as! NSArray
+//                self.pin!.setValue(photos.count, forKey: Pin.Keys.PhotosForPage)
+//                for pic in photos {
+//                    self.pin!.attachPhoto(pic as! NSDictionary, moc: self.moc)
+//                }
+//            }
+//        }
+//        let photos = self.photosStillNotDownloaded()!
+//        for photo in photos
+//        {
+//            print("photo to download: \(photo)")
+//        }
+    }
+    
+    func deletePhotoAlbum()
+    {
+        for photo in self.pin!.photos!
+        {
+            print("deleting photo: \(photo)")
+            self.moc.deleteObject(photo as! Photo)
+        }
+        print("delete complete")
+    }
+    
+    // MARK: --- Count Photos Still Downloading
     
     func photosAlreadyDownloaded() -> Int?
     {
@@ -129,6 +175,20 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             return result.count
         } catch _ as NSError {
             print("Error counting downloaded photos.")
+            return nil
+        }
+    }
+    
+    func photosStillNotDownloaded() -> NSArray?
+    {
+        let request = NSFetchRequest(entityName: ENTITY_NAME_PHOTO)
+        request.predicate = NSPredicate(format: "pin == %@ AND downloaded == 0", self.pin!)
+        request.sortDescriptors = []
+        do {
+            let result = try self.moc.executeFetchRequest(request)
+            return result
+        } catch _ as NSError {
+            print("Error counting un-downloaded photos.")
             return nil
         }
     }

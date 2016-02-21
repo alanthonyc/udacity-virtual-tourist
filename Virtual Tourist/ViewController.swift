@@ -190,7 +190,8 @@ class ViewController: UIViewController, MKMapViewDelegate
         pin.setValue(self.pinCollection, forKey: Pin.Keys.Collection)
         pin.setValue(0, forKey: Pin.Keys.PhotosForPage)
         pin.setValue(1, forKey: Pin.Keys.Page)
-        FlickrRequestController().getImagesAroundLocation(location.latitude, lon:location.longitude, page:1, picsPerPage: MAX_NUMBER_OF_CELLS) {
+        FlickrRequestController().getImagesAroundLocation(location.latitude, lon:location.longitude, page:1, picsPerPage: MAX_NUMBER_OF_CELLS)
+        {
             JSONResult, error in
             if let error = error {
                 print("Error pre-loading images for pin: \(error)")

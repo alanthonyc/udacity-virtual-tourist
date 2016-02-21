@@ -50,7 +50,7 @@ class Photo: NSManagedObject
             documentsPath.appendContentsOf("/\(self.filename!)")
             let data = NSData(contentsOfFile: documentsPath)
             if data != nil {
-                if self.downloaded != true {
+                if self.downloaded != true  {
                     self.downloaded = true
                 }
                 return UIImage(data: data!)

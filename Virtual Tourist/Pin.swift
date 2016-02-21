@@ -44,13 +44,17 @@ class Pin: NSManagedObject
     {
         let photoEntity = NSEntityDescription.entityForName(ENTITY_NAME_PHOTO, inManagedObjectContext: moc)
         let photo = NSManagedObject(entity: photoEntity!, insertIntoManagedObjectContext: moc) as! Photo
+        
+        let time = NSDate().timeIntervalSince1970
+        let uniqueFilename = "\(photoDict[FLICKR_DICT_ID]!)\(time)"
         photo.setValue(photoDict[FLICKR_DICT_URLM], forKey: Photo.Keys.flickrUrl)
         photo.setValue(photoDict[FLICKR_DICT_ID], forKey: Photo.Keys.flickrId)
-        photo.setValue(photoDict[FLICKR_DICT_ID], forKey: Photo.Keys.filename)
+        
+        photo.setValue(uniqueFilename, forKey: Photo.Keys.filename)
         photo.setValue(self, forKey: Photo.Keys.Pin)
         if let imageData = NSData(contentsOfURL: NSURL(string: photo.flickrUrl!)!) {
             dispatch_async(dispatch_get_main_queue(), {
-                let path = pathForIdentifier(photo.flickrId!)
+                let path = pathForIdentifier(photo.filename!)
                 let data = UIImagePNGRepresentation(UIImage(data: imageData)!)!
                 photo.setValue(path, forKey: Photo.Keys.fileSystemUrl)
                 data.writeToFile(path, atomically: true)
