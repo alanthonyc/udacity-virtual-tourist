@@ -219,7 +219,7 @@ class ViewController: UIViewController, MKMapViewDelegate
         pin.setValue(location.latitude, forKey: Pin.Keys.Latitude)
         pin.setValue(self.pinCollection, forKey: Pin.Keys.Collection)
         pin.setValue(self.pinCategory, forKey: Pin.Keys.Category)
-        pin.setValue(0, forKey: Pin.Keys.PhotosForPage)
+        pin.setValue(nil, forKey: Pin.Keys.PhotosForPage)
         pin.setValue(1, forKey: Pin.Keys.Page)
         (pin as! Pin).getImages()
         saveMoc()

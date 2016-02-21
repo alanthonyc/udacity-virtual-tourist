@@ -54,9 +54,11 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     override func viewWillAppear(animated: Bool)
     {
-        if self.pin!.photosForPage! == 0 || self.pin!.photosForPage == nil {
-            self.collectionView.alpha = 0.0
-            self.newCollectionButton.enabled = false
+        if self.pin!.photosForPage != nil {
+            if self.pin!.photosForPage! == 0 {
+                self.collectionView.alpha = 0.0
+                self.newCollectionButton.enabled = false
+            }
         }
     }
     
