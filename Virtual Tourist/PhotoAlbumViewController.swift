@@ -57,9 +57,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         self.newCollectionButton.enabled = false
         self.noImagesLabel.alpha = 1.0
-        // compare (self.pin!.photosForPage as! Int) to count of self.pin.photos that haven't downloaded yet
-        print("photos expected: \(self.pin!.photosForPage)")
-        print("photos already downloaded: \(photosAlreadyDownloaded())")
+        let downloaded = photosAlreadyDownloaded()
+        if downloaded! >= self.pin!.photosForPage as! Int
+        {
+            print("Button Check: \(downloaded)")
+            self.newCollectionButton.enabled = true
+        }
     }
     
     override func viewDidAppear(animated: Bool)
@@ -94,6 +97,13 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         self.mapView.addAnnotation(point)
     }
     
+    // MARK: - Actions
+    
+    @IBAction func newCollectionButtonTapped()
+    {
+        print("button tapped")
+    }
+    
     // MARK: - NSFetchedResultsController
     
     lazy var frc: NSFetchedResultsController =
@@ -123,14 +133,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         }
     }
     
-    // MARK: Core Data
+    // MARK: - Core Data Helper
     
     lazy var moc =
     {
         CoreDataManager.sharedInstance().managedObjectContext
     } ()
     
-    // MARK: UICollectionViewDataSource
+    // MARK: - UICollectionViewDataSource
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int
     {
@@ -176,8 +186,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
 
         let photo = self.frc.objectAtIndexPath(indexPath) as! Photo
         let image = photo.image { (result, error) -> Void in
-            print("Downloaded another photo, total photos: \(self.photosAlreadyDownloaded())")
-            print("Total photos expected: \(self.pin!.photosForPage)")
+            let downloaded = self.photosAlreadyDownloaded()
+            let total = self.pin!.photosForPage
+            if downloaded! >= total as! Int {
+                print("Button Check x: \(downloaded) - \(total)")
+                self.newCollectionButton.enabled = true
+            }
         } as UIImage?
         if image != nil {
             cell.imageCell.image = image
@@ -188,10 +202,11 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath)
     {
         let photoToDelete = frc.objectAtIndexPath(indexPath) as! Photo
+        self.pin!.photosForPage = (self.pin!.photosForPage as! Int) - 1
         self.moc.deleteObject(photoToDelete)
     }
     
-    // MARK: NSFetchedResultsControllerDelegate
+    // MARK: - NSFetchedResultsControllerDelegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController)
     {

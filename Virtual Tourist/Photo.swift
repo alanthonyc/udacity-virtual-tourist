@@ -65,7 +65,9 @@ class Photo: NSManagedObject
                     self.fileSystemUrl = path
                     data.writeToFile(path, atomically: true)
                     self.downloaded = true
-                    completionHandler(result: path, error: nil)
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        completionHandler(result: path, error: nil)
+                    })
                 }
             })
             return nil
