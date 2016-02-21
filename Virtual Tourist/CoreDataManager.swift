@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 private let SQLITE_FILENAME = "Virtual_Tourist.sqlite"
 
@@ -58,7 +59,10 @@ class CoreDataManager
             // Replace this with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             NSLog("Unresolved error \(wrappedError), \(wrappedError.userInfo)")
-            abort()
+            let alert = UIAlertController.init(title:"Persisten Store Coordinator Error", message:"Error settin up PSC.", preferredStyle: UIAlertControllerStyle.Alert)
+            let okAction = UIAlertAction.init(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil)
+            alert.addAction(okAction)
+            UIApplication.sharedApplication().keyWindow?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
             // // //
         }
         return coordinator
@@ -86,7 +90,10 @@ class CoreDataManager
                 // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 let nserror = error as NSError
                 NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
-                abort()
+                let alert = UIAlertController.init(title:"Managed Object Context Error", message:"Error saving MOC.", preferredStyle: UIAlertControllerStyle.Alert)
+                let okAction = UIAlertAction.init(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil)
+                alert.addAction(okAction)
+                UIApplication.sharedApplication().keyWindow?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
                 // // //
             }
         }
