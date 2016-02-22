@@ -79,16 +79,29 @@ class Pin: NSManagedObject
         photo.setValue(photoDict[FLICKR_DICT_ID], forKey: Photo.Keys.flickrId)
         
         photo.setValue(uniqueFilename, forKey: Photo.Keys.filename)
+        photo.setValue(false, forKey: Photo.Keys.downloaded)
         photo.setValue(self, forKey: Photo.Keys.Pin)
     }
     
-    func downloadPhoto(photo: Photo)
+    func downloadPhoto(photo: Photo) -> Void
     {
+        guard photo.flickrUrl != nil else
+        {
+            print("Photo Flickr url is nil.")
+            return
+        }
+        
         if let imageData = NSData(contentsOfURL: NSURL(string: photo.flickrUrl!)!) {
-            dispatch_async(dispatch_get_main_queue(), {
+            dispatch_async(dispatch_get_main_queue(),
+            {
+                guard photo.filename != nil else
+                {
+                    return
+                }
                 let path = pathForIdentifier(photo.filename!)
                 let data = UIImagePNGRepresentation(UIImage(data: imageData)!)!
                 photo.setValue(path, forKey: Photo.Keys.fileSystemUrl)
+                photo.setValue(true, forKey: Photo.Keys.downloaded)
                 data.writeToFile(path, atomically: true)
             })
             

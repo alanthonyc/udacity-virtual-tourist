@@ -60,6 +60,17 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 self.newCollectionButton.enabled = false
             }
         }
+        let (downloaded, notDownloaded) = photosDownloaded()
+        print("Downloaded: \(downloaded!.count)")
+        print("Not downloaded: \(notDownloaded!.count)")
+        if notDownloaded!.count > 0 || self.pin!.photosForPage == nil
+        {
+            let qos = QOS_CLASS_BACKGROUND
+            let backgroundQ = dispatch_get_global_queue(qos, 0)
+            dispatch_async(backgroundQ, { () -> Void in
+                self.downloadRemainingPhotos(notDownloaded!)
+            })
+        }
     }
     
     override func viewDidAppear(animated: Bool)
@@ -68,11 +79,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let region = MKCoordinateRegionMakeWithDistance(coordinates, 1600, 1600);
         mapView.setCenterCoordinate(coordinates, animated: true)
         mapView.setRegion(region, animated: true)
-    }
-    
-    override func viewWillDisappear(animated: Bool)
-    {
-        saveMoc()
     }
     
     override func didReceiveMemoryWarning()
@@ -103,7 +109,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     @IBAction func newCollectionButtonTapped()
     {
-        deletePhotoAlbum()
         downloadNextAlbum()
     }
     
@@ -122,21 +127,61 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     // MARK: - View Controller Actions
     
-    // MARK: --- Download Photo Album
+    // MARK: --- Photo Album Subsets
+    
+    func photosDownloaded() -> ([Photo]?, [Photo]?)
+    {
+        var downloaded: [Photo] = []
+        var notDownloaded: [Photo] = []
+        print("Checking \(self.pin!.photos!.count) photos if downloaded:")
+        for photo in self.pin!.photos!
+        {
+            print("---> \((photo as! Photo).filename!) ::: \((photo as! Photo).downloaded)")
+            if (photo as! Photo).downloaded != nil && (photo as! Photo).downloaded! == true
+            {
+                print(">>downloaded<<")
+                downloaded.append(photo as! Photo)
+                
+            } else {
+                print(">>not yet downloaded<<")
+                notDownloaded.append(photo as! Photo)
+            }
+        }
+        print("\(downloaded.count) downloaded, \(notDownloaded.count) not yet downloaded")
+        return (downloaded, notDownloaded)
+    }
+    
+    // MARK: --- Photo Actions
+    
+    func downloadRemainingPhotos(photos: [Photo])
+    {
+        for photo in photos
+        {
+            self.pin!.downloadPhoto(photo)
+        }
+    }
+    
+    // MARK: --- Photo Album Actions
+    
+    func downloadAlbum(page: Int)
+    {
+        self.pin!.page = page
+        self.pin!.getImages()
+    }
     
     func downloadNextAlbum()
     {
+        deletePhotoAlbum()
         var nextPage = (self.pin!.page as! Int) + 1
         if nextPage > self.pin!.pages as! Int {
             nextPage = 1
         }
-        self.pin!.page = nextPage
-        self.pin!.getImages()
+        downloadAlbum(nextPage)
     }
     
     func deletePhotoAlbum()
     {
-        for item in 1 ... self.collectionView.numberOfItemsInSection(0)
+        for item in 0 ... self.frc.fetchedObjects!.count
         {
             let indexPath = NSIndexPath(forItem: item, inSection: 0)
             let cell = self.collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell?
@@ -160,11 +205,15 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func saveMoc()
     {
-        do {
-            try moc.save()
-            
-        } catch let error as NSError {
-            print("error saving moc: \(error)")
+        dispatch_async(dispatch_get_main_queue())
+            {
+                () -> Void in
+                do {
+                    try self.moc.save()
+                    
+                } catch let error as NSError {
+                    print("error saving moc: \(error)")
+                }
         }
     }
     
@@ -261,8 +310,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             case .Update:
                 self.updatedPhotos.append(indexPath!)
                 break
-            case .Move:
-                print("Move Photo: should not happen in this app.")
+            default:
                 break
         }
     }

@@ -58,11 +58,6 @@ class ViewController: UIViewController, MKMapViewDelegate
         addPinsFromDataStore(pins)
 
     }
-    
-    override func viewWillDisappear(animated: Bool)
-    {
-        saveMoc()
-    }
 
     override func didReceiveMemoryWarning()
     {
@@ -78,11 +73,15 @@ class ViewController: UIViewController, MKMapViewDelegate
     
     func saveMoc()
     {
-        do {
-            try moc.save()
-        
-        } catch let error as NSError {
-            print("error saving moc: \(error)")
+        dispatch_async(dispatch_get_main_queue())
+        {
+            () -> Void in
+            do {
+                try self.moc.save()
+                
+            } catch let error as NSError {
+                print("error saving moc: \(error)")
+            }
         }
     }
     
