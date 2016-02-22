@@ -53,21 +53,24 @@ class Pin: NSManagedObject
                     print("Error pre-loading images for pin: \(error)")
                     
                 } else {
-                    let photosDictionary = JSONResult
-                    self.pages = photosDictionary["pages"] as? NSNumber
-                    let photos = photosDictionary["photo"] as! NSArray
-                    self.photosForPage = photos.count
-                    for pic in photos
-                    {
-                        self.attachPhoto(pic as! NSDictionary)
-                    }
-                    if self.photos != nil
-                    {
-                        for photo in self.photos!
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        
+                        let photosDictionary = JSONResult
+                        self.pages = photosDictionary["pages"] as? NSNumber
+                        let photos = photosDictionary["photo"] as! NSArray
+                        self.photosForPage = photos.count
+                        for pic in photos
                         {
-                            self.downloadPhoto(photo as! Photo)
+                            self.attachPhoto(pic as! NSDictionary)
                         }
-                    }
+                        if self.photos != nil
+                        {
+                            for photo in self.photos!
+                            {
+                                self.downloadPhoto(photo as! Photo)
+                            }
+                        }
+                    })
                 }
         }
     }
@@ -94,28 +97,34 @@ class Pin: NSManagedObject
             return
         }
         
-        if let imageData = NSData(contentsOfURL: NSURL(string: photo.flickrUrl!)!) {
-            dispatch_async(dispatch_get_main_queue(),
-            {
-                guard photo.filename != nil else
+        let photoUrl = photo.flickrUrl!
+        let qos = QOS_CLASS_BACKGROUND
+        let backgroundQ = dispatch_get_global_queue(qos, 0)
+        dispatch_async(backgroundQ, { () -> Void in
+
+            if let imageData = NSData(contentsOfURL: NSURL(string: photoUrl)!) {
+                dispatch_async(dispatch_get_main_queue(),
                 {
-                    return
-                }
-                let path = pathForIdentifier(photo.filename!)
-                let data = UIImagePNGRepresentation(UIImage(data: imageData)!)!
-                photo.setValue(path, forKey: Photo.Keys.fileSystemUrl)
-                photo.setValue(true, forKey: Photo.Keys.downloaded)
-                data.writeToFile(path, atomically: true)
-                do {
-                    try self.managedObjectContext!.save()
-                } catch _ as NSError {
-                    print("Error saving context.")
-                }
-            })
-            
-        } else {
-            print("Error downloading image at: \(photo.flickrUrl)")
-        }
+                    guard photo.filename != nil else
+                    {
+                        return
+                    }
+                    let path = pathForIdentifier(photo.filename!)
+                    let data = UIImagePNGRepresentation(UIImage(data: imageData)!)!
+                    photo.setValue(path, forKey: Photo.Keys.fileSystemUrl)
+                    photo.setValue(true, forKey: Photo.Keys.downloaded)
+                    data.writeToFile(path, atomically: true)
+                    do {
+                        try self.managedObjectContext!.save()
+                    } catch _ as NSError {
+                        print("Error saving context.")
+                    }
+                })
+                
+            } else {
+                print("Error downloading image at: \(photo.flickrUrl)")
+            }
+        })
     }
 }
 

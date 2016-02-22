@@ -66,11 +66,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         if notDownloaded!.count > 0
         {
             self.newCollectionButton.enabled = false
-            let qos = QOS_CLASS_BACKGROUND
-            let backgroundQ = dispatch_get_global_queue(qos, 0)
-            dispatch_async(backgroundQ, { () -> Void in
-                self.downloadRemainingPhotos(notDownloaded!)
-            })
+            self.downloadRemainingPhotos(notDownloaded!)
         }
         if self.pin!.photosForPage == nil
         {
