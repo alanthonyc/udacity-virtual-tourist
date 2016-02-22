@@ -56,7 +56,7 @@ class CoreDataManager
             let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
             
             NSLog("Unresolved error \(wrappedError), \(wrappedError.userInfo)")
-            let alert = UIAlertController.init(title:"Persisten Store Coordinator Error", message:"Error settin up PSC.", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController.init(title:"Persistent Store Coordinator Error", message:"Error settin up PSC.", preferredStyle: UIAlertControllerStyle.Alert)
             let okAction = UIAlertAction.init(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil)
             alert.addAction(okAction)
             UIApplication.sharedApplication().keyWindow?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
