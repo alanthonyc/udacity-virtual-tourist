@@ -72,12 +72,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     override func viewWillDisappear(animated: Bool)
     {
-        do {
-            try moc.save()
-            
-        } catch let error as NSError {
-            print("error saving moc: \(error)")
-        }
+        saveMoc()
     }
     
     override func didReceiveMemoryWarning()
@@ -153,6 +148,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         {
             self.moc.deleteObject(photo as! Photo)
         }
+        saveMoc()
     }
     
     // MARK: - Core Data Helper
@@ -161,6 +157,17 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         CoreDataManager.sharedInstance().managedObjectContext
     } ()
+    
+    func saveMoc()
+    {
+        do {
+            try moc.save()
+            
+        } catch let error as NSError {
+            print("error saving moc: \(error)")
+        }
+    }
+    
     
     // MARK: - UICollectionViewDataSource
     
@@ -208,6 +215,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let photoToDelete = frc.objectAtIndexPath(indexPath) as! Photo
         self.pin!.photosForPage = (self.pin!.photosForPage as! Int) - 1
         self.moc.deleteObject(photoToDelete)
+        saveMoc()
     }
     
     // MARK: - NSFetchedResultsControllerDelegate
