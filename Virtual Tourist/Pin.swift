@@ -61,9 +61,12 @@ class Pin: NSManagedObject
                     {
                         self.attachPhoto(pic as! NSDictionary)
                     }
-                    for photo in self.photos!
+                    if self.photos != nil
                     {
-                        self.downloadPhoto(photo as! Photo)
+                        for photo in self.photos!
+                        {
+                            self.downloadPhoto(photo as! Photo)
+                        }
                     }
                 }
         }
@@ -103,6 +106,11 @@ class Pin: NSManagedObject
                 photo.setValue(path, forKey: Photo.Keys.fileSystemUrl)
                 photo.setValue(true, forKey: Photo.Keys.downloaded)
                 data.writeToFile(path, atomically: true)
+                do {
+                    try self.managedObjectContext!.save()
+                } catch _ as NSError {
+                    print("Error saving context.")
+                }
             })
             
         } else {

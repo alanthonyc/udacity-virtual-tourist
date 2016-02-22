@@ -54,8 +54,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     override func viewWillAppear(animated: Bool)
     {
-        if self.pin!.photosForPage != nil {
-            if self.pin!.photosForPage! == 0 {
+        if self.pin!.photosForPage != nil
+        {
+            if self.pin!.photosForPage! == 0
+            {
                 self.collectionView.alpha = 0.0
                 self.newCollectionButton.enabled = false
             }
@@ -65,6 +67,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         print("Not downloaded: \(notDownloaded!.count)")
         if notDownloaded!.count > 0 || self.pin!.photosForPage == nil
         {
+            self.newCollectionButton.enabled = false
             let qos = QOS_CLASS_BACKGROUND
             let backgroundQ = dispatch_get_global_queue(qos, 0)
             dispatch_async(backgroundQ, { () -> Void in
@@ -133,21 +136,16 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         var downloaded: [Photo] = []
         var notDownloaded: [Photo] = []
-        print("Checking \(self.pin!.photos!.count) photos if downloaded:")
         for photo in self.pin!.photos!
         {
-            print("---> \((photo as! Photo).filename!) ::: \((photo as! Photo).downloaded)")
             if (photo as! Photo).downloaded != nil && (photo as! Photo).downloaded! == true
             {
-                print(">>downloaded<<")
                 downloaded.append(photo as! Photo)
                 
             } else {
-                print(">>not yet downloaded<<")
                 notDownloaded.append(photo as! Photo)
             }
         }
-        print("\(downloaded.count) downloaded, \(notDownloaded.count) not yet downloaded")
         return (downloaded, notDownloaded)
     }
     
@@ -206,14 +204,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func saveMoc()
     {
         dispatch_async(dispatch_get_main_queue())
-            {
-                () -> Void in
-                do {
-                    try self.moc.save()
-                    
-                } catch let error as NSError {
-                    print("error saving moc: \(error)")
-                }
+        {
+            () -> Void in
+            do {
+                try self.moc.save()
+                
+            } catch let error as NSError {
+                print("error saving moc: \(error)")
+            }
         }
     }
     
@@ -262,7 +260,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath)
     {
         let photoToDelete = frc.objectAtIndexPath(indexPath) as! Photo
-        self.pin!.photosForPage = (self.pin!.photosForPage as! Int) - 1
+//        self.pin!.photosForPage = (self.pin!.photosForPage as! Int) - 1
         self.moc.deleteObject(photoToDelete)
         saveMoc()
     }
