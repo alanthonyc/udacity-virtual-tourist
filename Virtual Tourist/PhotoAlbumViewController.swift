@@ -56,6 +56,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     {
         if self.pin!.photosForPage != nil
         {
+            self.collectionView.alpha = 1.0
             if self.pin!.photosForPage! == 0
             {
                 self.collectionView.alpha = 0.0
@@ -97,6 +98,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         self.view.addSubview(self.collectionView)
         self.maxPage = 1
         self.currentPage = 1
+        self.collectionView.alpha = 0.0
     }
     
     func configureMapAnnotation()
