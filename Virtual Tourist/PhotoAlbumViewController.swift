@@ -62,9 +62,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 self.newCollectionButton.enabled = false
             }
         }
-        let (downloaded, notDownloaded) = photosDownloaded()
-        print("Downloaded: \(downloaded!.count)")
-        print("Not downloaded: \(notDownloaded!.count)")
+        let (_, notDownloaded) = photosDownloaded()
         if notDownloaded!.count > 0 || self.pin!.photosForPage == nil
         {
             self.newCollectionButton.enabled = false
@@ -112,6 +110,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     @IBAction func newCollectionButtonTapped()
     {
+        self.newCollectionButton.enabled = false
         downloadNextAlbum()
     }
     
@@ -185,6 +184,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             let cell = self.collectionView.cellForItemAtIndexPath(indexPath) as! CollectionViewCell?
             if cell != nil {
                 cell!.imageCell.image = nil
+                cell!.activityIndicator.startAnimating()
             }
         }
         for photo in self.pin!.photos!
@@ -260,7 +260,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath)
     {
         let photoToDelete = frc.objectAtIndexPath(indexPath) as! Photo
-//        self.pin!.photosForPage = (self.pin!.photosForPage as! Int) - 1
         self.moc.deleteObject(photoToDelete)
         saveMoc()
     }
@@ -276,7 +275,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func controllerDidChangeContent(controller: NSFetchedResultsController)
     {
-        collectionView.performBatchUpdates({() -> Void in
+        collectionView.performBatchUpdates(
+        {() -> Void in
             
             for photo in self.insertedPhotos
             {
@@ -293,7 +293,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 self.collectionView.reloadItemsAtIndexPaths([photo])
             }
             
-            }, completion: nil)
+            self.newCollectionButton.enabled = false
+            let (_, notDownloaded) = self.photosDownloaded()
+            if notDownloaded!.count == 0
+            {
+                self.newCollectionButton.enabled = true
+            }
+            
+        }, completion: nil)
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?)
