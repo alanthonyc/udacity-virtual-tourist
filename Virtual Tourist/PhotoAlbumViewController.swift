@@ -63,7 +63,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             }
         }
         let (_, notDownloaded) = photosDownloaded()
-        if notDownloaded!.count > 0 || self.pin!.photosForPage == nil
+        if notDownloaded!.count > 0
         {
             self.newCollectionButton.enabled = false
             let qos = QOS_CLASS_BACKGROUND
@@ -71,6 +71,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             dispatch_async(backgroundQ, { () -> Void in
                 self.downloadRemainingPhotos(notDownloaded!)
             })
+        }
+        if self.pin!.photosForPage == nil
+        {
+            downloadAlbum(1)
         }
     }
     

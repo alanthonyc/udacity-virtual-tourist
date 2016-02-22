@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  RootViewController.swift
 //  Virtual Tourist
 //
 //  Created by A. Anthony Castillo on 1/17/16.
@@ -27,7 +27,7 @@ class DraggableAnnotation: NSObject, MKAnnotation {
     }
 }
 
-class ViewController: UIViewController, MKMapViewDelegate
+class RootViewController: UIViewController, MKMapViewDelegate
 {
     // MARK: - IB Outlets
     
